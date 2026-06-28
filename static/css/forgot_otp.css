@@ -1,0 +1,7 @@
+/* ==========================================================================
+   LIORA — Forgot Password OTP Page
+   Inherits .otp-box, .otp-timer, .resend-btn styling from signup_otp.css
+   ========================================================================== */
+.auth-subtitle strong {
+    color: var(--burgundy-dark);
+}

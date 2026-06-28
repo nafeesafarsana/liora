@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Profile | LIORA{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/sidebar.css' %}">
+<link rel="stylesheet" href="{% static 'css/profile.css' %}">
+{% endblock %}
+
+{% block layout_class %}with-sidebar{% endblock %}
+
+{% block sidebar %}
+{% include 'includes/profile_sidebar.html' %}
+{% endblock %}
+
+{% block content %}
+<div class="profile-panel">
+    <div class="panel-header">
+        <p class="panel-eyebrow">Account</p>
+        <h1 class="panel-title">Personal Information</h1>
+    </div>
+
+    <div class="info-card">
+        <div class="info-row">
+            <span class="info-label">First Name</span>
+            <span class="info-value">{{ user.first_name }}</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Last Name</span>
+            <span class="info-value">{{ user.last_name }}</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Email Address</span>
+            <span class="info-value">{{ user.email }}</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Member Since</span>
+            <span class="info-value">{{ user.date_joined|date:"d M Y" }}</span>
+        </div>
+    </div>
+
+    <div class="panel-actions">
+        <a href="{% url 'profile_app:edit_profile' %}" class="btn-primary panel-btn">Edit Profile</a>
+        <a href="{% url 'profile_app:change_password' %}" class="btn-secondary panel-btn">Change Password</a>
+    </div>
+</div>
+{% endblock %}

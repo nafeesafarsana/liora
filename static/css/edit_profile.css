@@ -1,0 +1,23 @@
+/* ==========================================================================
+   LIORA — Edit Profile Page
+   Reuses .profile-panel, .panel-header etc. from profile.css
+   ========================================================================== */
+.edit-form .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-sm);
+}
+
+.field-hint {
+    display: block;
+    font-size: 0.78rem;
+    color: #8a8a8a;
+    margin-top: 6px;
+}
+
+@media (max-width: 540px) {
+    .edit-form .form-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+}

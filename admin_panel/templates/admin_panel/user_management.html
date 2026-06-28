@@ -1,0 +1,151 @@
+{% extends 'admin_panel/admin_base.html' %}
+{% load static %}
+
+{% block title %}User Management | LIORA Admin{% endblock %}
+
+{% block content %}
+{% include 'admin_panel/includes/admin_navbar.html' %}
+
+<div class="admin-shell">
+    <div class="admin-page-header">
+        <p class="admin-eyebrow">Users</p>
+        <h1 class="admin-page-title">User Management</h1>
+    </div>
+
+    <div class="admin-panel-card">
+        <div class="admin-panel-card-header admin-um-header">
+            <form method="get" action="{% url 'admin_panel:user_management' %}" class="admin-search-form">
+                <div class="admin-search-input-wrap">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    {{ search_form.q }}
+                </div>
+                <button type="submit" class="admin-btn-gold admin-search-btn">Search</button>
+                {% if query %}
+                <a href="{% url 'admin_panel:user_management' %}" class="admin-btn-outline admin-clear-btn">Clear</a>
+                {% endif %}
+            </form>
+        </div>
+
+        {% if query %}
+        <p class="admin-search-meta">
+            Showing <strong>{{ total_results }}</strong> result{{ total_results|pluralize }} for "<strong>{{ query }}</strong>"
+        </p>
+        {% endif %}
+
+        <div class="table-responsive">
+            <table class="table admin-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Date Joined</th>
+                        <th>Status</th>
+                        <th class="text-end">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for u in page_obj %}
+                    <tr>
+                        <td>{{ u.first_name }} {{ u.last_name }}</td>
+                        <td>{{ u.email }}</td>
+                        <td>{{ u.date_joined|date:"d M Y, H:i" }}</td>
+                        <td>
+                            {% if u.is_active %}
+                            <span class="admin-badge admin-badge-active">Active</span>
+                            {% else %}
+                            <span class="admin-badge admin-badge-blocked">Blocked</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end">
+                            {% if u.pk == request.user.pk %}
+                            <span class="admin-action-disabled" title="You cannot block your own account">&mdash;</span>
+                            {% elif u.is_active %}
+                            <button type="button"
+                                    class="admin-action-btn admin-action-block"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#confirmActionModal"
+                                    data-user-id="{{ u.pk }}"
+                                    data-user-name="{{ u.first_name }} {{ u.last_name }}"
+                                    data-action="block">
+                                Block
+                            </button>
+                            {% else %}
+                            <button type="button"
+                                    class="admin-action-btn admin-action-unblock"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#confirmActionModal"
+                                    data-user-id="{{ u.pk }}"
+                                    data-user-name="{{ u.first_name }} {{ u.last_name }}"
+                                    data-action="unblock">
+                                Unblock
+                            </button>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="5" class="text-center admin-empty-row">No users found.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% if page_obj.paginator.num_pages > 1 %}
+        <nav class="admin-pagination" aria-label="User list pagination">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query }}{% endif %}">Previous</a>
+                </li>
+                {% else %}
+                <li class="page-item disabled"><span class="page-link">Previous</span></li>
+                {% endif %}
+
+                {% for page_num in page_obj.paginator.page_range %}
+                    {% if page_num == page_obj.number %}
+                    <li class="page-item active"><span class="page-link">{{ page_num }}</span></li>
+                    {% else %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_num }}{% if query %}&q={{ query }}{% endif %}">{{ page_num }}</a>
+                    </li>
+                    {% endif %}
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query }}{% endif %}">Next</a>
+                </li>
+                {% else %}
+                <li class="page-item disabled"><span class="page-link">Next</span></li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+    </div>
+</div>
+
+<div class="modal fade" id="confirmActionModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content admin-modal-content">
+            <div class="modal-header admin-modal-header">
+                <h5 class="modal-title" id="confirmModalTitle">Confirm Action</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body admin-modal-body">
+                <p id="confirmModalMessage">Are you sure you want to proceed?</p>
+            </div>
+            <div class="modal-footer admin-modal-footer">
+                <button type="button" class="admin-btn-outline" data-bs-dismiss="modal">Cancel</button>
+                <form method="post" id="confirmActionForm" action=""
+                      data-base-url="{% url 'admin_panel:toggle_block_user' 0 %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="redirect_qs" value="{{ request.GET.urlencode }}">
+                    <button type="submit" class="admin-btn-gold" id="confirmModalSubmit">Confirm</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

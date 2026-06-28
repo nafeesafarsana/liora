@@ -1,0 +1,15 @@
+<nav class="admin-navbar">
+    <div class="admin-navbar-inner">
+        <a href="{% url 'admin_panel:dashboard' %}" class="admin-navbar-brand">LIORA <span>Admin</span></a>
+
+        <div class="admin-navbar-links">
+            <a href="{% url 'admin_panel:dashboard' %}" class="admin-nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">Dashboard</a>
+            <a href="{% url 'admin_panel:user_management' %}" class="admin-nav-link {% if request.resolver_match.url_name == 'user_management' %}active{% endif %}">User Management</a>
+        </div>
+
+        <div class="admin-navbar-user">
+            <span class="admin-navbar-username">{{ request.user.first_name|default:request.user.username }}</span>
+            <a href="{% url 'admin_panel:logout' %}" class="admin-logout-btn">Logout</a>
+        </div>
+    </div>
+</nav>

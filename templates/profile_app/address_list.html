@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Addresses | LIORA{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/sidebar.css' %}">
+<link rel="stylesheet" href="{% static 'css/address_list.css' %}">
+{% endblock %}
+
+{% block layout_class %}with-sidebar{% endblock %}
+
+{% block sidebar %}
+{% include 'includes/profile_sidebar.html' %}
+{% endblock %}
+
+{% block content %}
+<div class="profile-panel">
+    <div class="panel-header address-header">
+        <div>
+            <p class="panel-eyebrow">Account</p>
+            <h1 class="panel-title">Address Management</h1>
+        </div>
+        <a href="{% url 'profile_app:add_address' %}" class="btn-primary add-address-btn">+ Add New Address</a>
+    </div>
+
+    {% if addresses %}
+    <div class="address-grid">
+        {% for address in addresses %}
+        <div class="address-card {% if address.is_default %}default{% endif %}">
+            {% if address.is_default %}<span class="default-badge">Default</span>{% endif %}
+            <h3 class="address-name">{{ address.full_name }}</h3>
+            <p class="address-phone">{{ address.phone }}</p>
+            <p class="address-text">
+                {{ address.house_name }}, {{ address.area }}<br>
+                {{ address.city }}, {{ address.state }} - {{ address.pincode }}
+                {% if address.landmark %}<br>Landmark: {{ address.landmark }}{% endif %}
+            </p>
+
+            <div class="address-actions">
+                <a href="{% url 'profile_app:edit_address' address.pk %}" class="address-link">Edit</a>
+                <form method="post" action="{% url 'profile_app:delete_address' address.pk %}" class="delete-form" onsubmit="return confirm('Delete this address?');">
+                    {% csrf_token %}
+                    <button type="submit" class="address-link delete-link">Delete</button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+            <path d="M21 10c0 7-9 12-9 12s-9-5-9-12a9 9 0 1 1 18 0z"></path>
+            <circle cx="12" cy="10" r="3"></circle>
+        </svg>
+        <p class="empty-title">No addresses saved yet</p>
+        <p class="empty-subtitle">Add an address to make checkout faster next time.</p>
+        <a href="{% url 'profile_app:add_address' %}" class="btn-primary empty-btn">Add Your First Address</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

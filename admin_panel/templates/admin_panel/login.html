@@ -1,0 +1,37 @@
+{% extends 'admin_panel/admin_base.html' %}
+{% load static %}
+
+{% block title %}Admin Sign In | LIORA{% endblock %}
+{% block body_class %}admin-login-body{% endblock %}
+
+{% block content %}
+<div class="admin-login-shell">
+    <div class="admin-login-card">
+        <div class="admin-login-brandmark">LIORA</div>
+        <p class="admin-login-eyebrow">Administrator Access</p>
+        <h1 class="admin-login-title">Sign In to Continue</h1>
+        <p class="admin-login-subtitle">Restricted area — staff credentials required.</p>
+
+        <form method="post" action="{% url 'admin_panel:login' %}" novalidate>
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ next }}">
+
+            <div class="admin-form-group">
+                <label class="admin-form-label" for="{{ form.username.id_for_label }}">Username or Email</label>
+                {{ form.username }}
+                {% if form.username.errors %}<span class="admin-form-error">{{ form.username.errors.0 }}</span>{% endif %}
+            </div>
+
+            <div class="admin-form-group">
+                <label class="admin-form-label" for="{{ form.password.id_for_label }}">Password</label>
+                {{ form.password }}
+                {% if form.password.errors %}<span class="admin-form-error">{{ form.password.errors.0 }}</span>{% endif %}
+            </div>
+
+            <button type="submit" class="admin-btn-gold w-100">Sign In</button>
+        </form>
+
+        <p class="admin-login-footnote">This portal is for authorized LIORA staff only.</p>
+    </div>
+</div>
+{% endblock %}

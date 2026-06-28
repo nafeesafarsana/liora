@@ -1,0 +1,83 @@
+/* ==========================================================================
+   LIORA — Profile Page
+   ========================================================================== */
+.profile-panel {
+    background-color: var(--white);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-soft);
+    padding: var(--space-lg);
+    animation: fadeInUp var(--transition-mid);
+}
+
+.panel-header {
+    margin-bottom: var(--space-lg);
+}
+
+.panel-eyebrow {
+    font-size: 0.78rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 4px;
+}
+
+.panel-title {
+    font-size: 1.6rem;
+}
+
+.info-card {
+    border: 1px solid var(--beige-soft);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 22px;
+    border-bottom: 1px solid var(--beige-soft);
+}
+
+.info-row:last-child {
+    border-bottom: none;
+}
+
+.info-row:nth-child(odd) {
+    background-color: var(--beige-soft);
+}
+
+.info-label {
+    font-size: 0.85rem;
+    color: #6b6b6b;
+    letter-spacing: 0.02em;
+}
+
+.info-value {
+    font-size: 0.95rem;
+    color: var(--text);
+    font-weight: 500;
+}
+
+.panel-actions {
+    display: flex;
+    gap: var(--space-sm);
+    margin-top: var(--space-lg);
+}
+
+.panel-btn {
+    width: auto;
+    padding: 13px 28px;
+}
+
+@media (max-width: 540px) {
+    .panel-actions {
+        flex-direction: column;
+    }
+
+    .info-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
+}

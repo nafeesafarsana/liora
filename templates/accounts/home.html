@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}LIORA | Timeless Luxury Handbags{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<section class="hero">
+    <div class="hero-content">
+        <p class="hero-eyebrow">The Autumn Atelier Collection</p>
+        <h1 class="hero-title">Carry Your<br><span>Quiet Confidence</span></h1>
+        <p class="hero-subtitle">Each LIORA piece is hand-finished by master artisans, designed for the woman who moves through life with grace and intention.</p>
+        <div class="hero-cta-row">
+            <a href="#featured" class="btn-primary hero-btn">Shop the Collection</a>
+            <a href="#story" class="hero-link">Our Story &rarr;</a>
+        </div>
+    </div>
+    <div class="hero-visual">
+        <div class="hero-bag-frame">
+            <div class="hero-bag-glow"></div>
+        </div>
+    </div>
+</section>
+
+<section class="featured" id="featured">
+    <div class="section-heading">
+        <p class="section-eyebrow">Featured</p>
+        <h2 class="section-title">This Season's Icons</h2>
+    </div>
+
+    <div class="product-grid">
+        {% for product in featured_products %}
+        <div class="product-card">
+            <div class="product-image-wrap">
+                <div class="product-image-placeholder">
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+                        <path d="M6 7h12l1 13H5L6 7z"></path>
+                        <path d="M9 7V5a3 3 0 0 1 6 0v2"></path>
+                    </svg>
+                </div>
+                <button class="quick-wishlist" aria-label="Add to wishlist">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                    </svg>
+                </button>
+            </div>
+            <h3 class="product-name">{{ product.name }}</h3>
+            <p class="product-price">&#8377; {{ product.price }}</p>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="story" id="story">
+    <div class="story-content">
+        <p class="section-eyebrow">Our Story</p>
+        <h2 class="section-title">Crafted by Hand,<br>Carried with Heart</h2>
+        <p class="story-text">Founded on the belief that true luxury lies in detail, LIORA partners with skilled leather artisans to create pieces that age beautifully and last for generations. Every stitch tells a story of patience, precision, and pride.</p>
+        <a href="#" class="hero-link">Discover Our Craftsmanship &rarr;</a>
+    </div>
+</section>
+
+<section class="newsletter">
+    <div class="newsletter-inner">
+        <h2 class="newsletter-title">Stay In Touch</h2>
+        <p class="newsletter-subtitle">Be the first to know about new collections and exclusive previews.</p>
+        <form class="newsletter-form">
+            <input type="email" placeholder="Your email address" class="newsletter-input">
+            <button type="submit" class="btn-gold newsletter-btn">Subscribe</button>
+        </form>
+    </div>
+</section>
+
+{% endblock %}

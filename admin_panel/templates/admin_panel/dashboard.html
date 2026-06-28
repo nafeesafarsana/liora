@@ -1,0 +1,96 @@
+{% extends 'admin_panel/admin_base.html' %}
+{% load static %}
+
+{% block title %}Dashboard | LIORA Admin{% endblock %}
+
+{% block content %}
+{% include 'admin_panel/includes/admin_navbar.html' %}
+
+<div class="admin-shell">
+    <div class="admin-page-header">
+        <p class="admin-eyebrow">Overview</p>
+        <h1 class="admin-page-title">Dashboard</h1>
+    </div>
+
+    <div class="row g-4 admin-stat-row">
+        <div class="col-md-4">
+            <div class="admin-stat-card">
+                <div class="admin-stat-icon admin-stat-icon-total">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                </div>
+                <p class="admin-stat-label">Total Users</p>
+                <p class="admin-stat-value">{{ total_users }}</p>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="admin-stat-card">
+                <div class="admin-stat-icon admin-stat-icon-active">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                    </svg>
+                </div>
+                <p class="admin-stat-label">Active Users</p>
+                <p class="admin-stat-value">{{ active_users }}</p>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="admin-stat-card">
+                <div class="admin-stat-icon admin-stat-icon-blocked">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line>
+                    </svg>
+                </div>
+                <p class="admin-stat-label">Blocked Users</p>
+                <p class="admin-stat-value">{{ blocked_users }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="admin-panel-card mt-5">
+        <div class="admin-panel-card-header">
+            <h2 class="admin-panel-card-title">Recently Joined</h2>
+            <a href="{% url 'admin_panel:user_management' %}" class="admin-link-gold">View All Users &rarr;</a>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table admin-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Date Joined</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for u in recent_users %}
+                    <tr>
+                        <td>{{ u.first_name }} {{ u.last_name }}</td>
+                        <td>{{ u.email }}</td>
+                        <td>{{ u.date_joined|date:"d M Y, H:i" }}</td>
+                        <td>
+                            {% if u.is_active %}
+                            <span class="admin-badge admin-badge-active">Active</span>
+                            {% else %}
+                            <span class="admin-badge admin-badge-blocked">Blocked</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="4" class="text-center admin-empty-row">No users yet.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

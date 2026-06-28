@@ -1,0 +1,64 @@
+/* ==========================================================================
+   LIORA — Login Page
+   ========================================================================== */
+.toggle-password {
+    position: absolute;
+    right: 14px;
+    top: 38px;
+    font-size: 0.75rem;
+    color: var(--burgundy-light);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    font-weight: 500;
+}
+
+.toggle-password:hover {
+    color: var(--burgundy);
+}
+
+.login-options {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-md);
+}
+
+.remember-me {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.86rem;
+    color: var(--text);
+    cursor: pointer;
+}
+
+.remember-me input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--burgundy);
+    cursor: pointer;
+}
+
+.forgot-link {
+    font-size: 0.86rem;
+    color: var(--burgundy);
+    font-weight: 500;
+    transition: color var(--transition-fast);
+}
+
+.forgot-link:hover {
+    color: var(--burgundy-dark);
+    text-decoration: underline;
+}
+
+@media (max-width: 480px) {
+    .auth-card {
+        padding: var(--space-lg) var(--space-md);
+    }
+
+    .login-options {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-xs);
+    }
+}

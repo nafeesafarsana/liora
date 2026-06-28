@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Verify Code | LIORA{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/signup_otp.css' %}">
+<link rel="stylesheet" href="{% static 'css/forgot_otp.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="auth-shell">
+    <div class="auth-card">
+        <p class="auth-eyebrow">LIORA</p>
+        <h1 class="auth-title">Verify Your Identity</h1>
+        <p class="auth-subtitle">We've sent a 6-digit code to<br><strong>{{ email }}</strong></p>
+
+        <form method="post" action="{% url 'accounts:forgot_otp' %}" id="otpForm" novalidate>
+            {% csrf_token %}
+
+            <div class="otp-input-group">
+                <input type="text" name="otp_1" maxlength="1" class="otp-box" inputmode="numeric" autocomplete="one-time-code" autofocus>
+                <input type="text" name="otp_2" maxlength="1" class="otp-box" inputmode="numeric">
+                <input type="text" name="otp_3" maxlength="1" class="otp-box" inputmode="numeric">
+                <input type="text" name="otp_4" maxlength="1" class="otp-box" inputmode="numeric">
+                <input type="text" name="otp_5" maxlength="1" class="otp-box" inputmode="numeric">
+                <input type="text" name="otp_6" maxlength="1" class="otp-box" inputmode="numeric">
+            </div>
+            {% if form.non_field_errors %}
+                <span class="form-error text-center" style="display:block;">{{ form.non_field_errors.0 }}</span>
+            {% endif %}
+
+            <button type="submit" class="btn-primary mt-md">Verify Code</button>
+        </form>
+
+        <div class="otp-timer-row">
+            <p class="otp-timer">Code expires in <span id="countdown">05:00</span></p>
+        </div>
+
+        <form method="post" action="{% url 'accounts:resend_forgot_otp' %}" id="resendForm">
+            {% csrf_token %}
+            <button type="submit" class="resend-btn" id="resendBtn" disabled>Resend Code (<span id="resendCooldown">30</span>s)</button>
+        </form>
+
+        <p class="auth-footer-text"><a href="{% url 'accounts:forgot_password' %}">&larr; Back</a></p>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/signup_otp.js' %}"></script>
+{% endblock %}

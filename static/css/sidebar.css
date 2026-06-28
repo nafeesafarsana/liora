@@ -1,0 +1,130 @@
+/* ==========================================================================
+   LIORA — Profile Sidebar
+   ========================================================================== */
+.profile-sidebar {
+    width: 280px;
+    flex-shrink: 0;
+    background-color: var(--white);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-soft);
+    overflow: hidden;
+    align-self: flex-start;
+    position: sticky;
+    top: 100px;
+}
+
+.sidebar-user {
+    background: linear-gradient(135deg, var(--burgundy) 0%, var(--burgundy-dark) 100%);
+    padding: var(--space-lg) var(--space-md);
+    text-align: center;
+    color: var(--cream);
+}
+
+.sidebar-avatar {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto var(--space-sm);
+    border-radius: 50%;
+    background-color: var(--gold);
+    color: var(--burgundy-dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    font-weight: 700;
+    border: 3px solid rgba(250, 247, 242, 0.3);
+}
+
+.sidebar-username {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    color: var(--cream);
+    margin-bottom: 2px;
+}
+
+.sidebar-email {
+    font-size: 0.78rem;
+    color: rgba(250, 247, 242, 0.7);
+    word-break: break-all;
+}
+
+.sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    padding: var(--space-sm);
+}
+
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 13px 16px;
+    border-radius: var(--radius-sm);
+    font-size: 0.9rem;
+    color: var(--text);
+    transition: background-color var(--transition-fast), color var(--transition-fast), padding-left var(--transition-fast);
+}
+
+.sidebar-link svg {
+    flex-shrink: 0;
+    color: var(--burgundy-light);
+    transition: color var(--transition-fast);
+}
+
+.sidebar-link:hover {
+    background-color: var(--beige-soft);
+    color: var(--burgundy);
+    padding-left: 20px;
+}
+
+.sidebar-link.active {
+    background-color: var(--burgundy);
+    color: var(--cream);
+}
+
+.sidebar-link.active svg {
+    color: var(--gold);
+}
+
+.sidebar-logout {
+    margin-top: 8px;
+    border-top: 1px solid var(--beige-soft);
+    border-radius: 0;
+    padding-top: 16px;
+    color: #B23A48;
+}
+
+.sidebar-logout svg {
+    color: #B23A48;
+}
+
+.sidebar-logout:hover {
+    background-color: #FBEAEC;
+    color: #8A2A36;
+}
+
+@media (max-width: 900px) {
+    .page-wrapper.with-sidebar {
+        flex-direction: column;
+    }
+
+    .profile-sidebar {
+        width: 100%;
+        position: static;
+    }
+
+    .sidebar-nav {
+        flex-direction: row;
+        overflow-x: auto;
+        gap: 8px;
+    }
+
+    .sidebar-link {
+        white-space: nowrap;
+    }
+
+    .sidebar-link:hover {
+        padding-left: 16px;
+    }
+}

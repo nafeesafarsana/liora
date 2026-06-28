@@ -1,0 +1,134 @@
+/* ==========================================================================
+   LIORA — Address List Page
+   ========================================================================== */
+.address-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-md);
+    flex-wrap: wrap;
+}
+
+.add-address-btn {
+    width: auto;
+    padding: 12px 24px;
+    font-size: 0.85rem;
+}
+
+.address-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-md);
+}
+
+.address-card {
+    position: relative;
+    border: 1px solid var(--beige-soft);
+    border-radius: var(--radius-md);
+    padding: var(--space-md);
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.address-card:hover {
+    border-color: var(--gold);
+    box-shadow: var(--shadow-soft);
+}
+
+.address-card.default {
+    border-color: var(--burgundy-light);
+    background-color: var(--beige-soft);
+}
+
+.default-badge {
+    position: absolute;
+    top: var(--space-md);
+    right: var(--space-md);
+    background-color: var(--gold);
+    color: var(--burgundy-dark);
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 999px;
+}
+
+.address-name {
+    font-size: 1.05rem;
+    margin-bottom: 4px;
+}
+
+.address-phone {
+    font-size: 0.85rem;
+    color: var(--burgundy);
+    margin-bottom: 10px;
+}
+
+.address-text {
+    font-size: 0.88rem;
+    color: #5a5a5a;
+    line-height: 1.6;
+    margin-bottom: var(--space-md);
+}
+
+.address-actions {
+    display: flex;
+    gap: var(--space-md);
+    border-top: 1px solid var(--beige-soft);
+    padding-top: var(--space-sm);
+}
+
+.address-link {
+    font-size: 0.85rem;
+    color: var(--burgundy);
+    font-weight: 500;
+    transition: color var(--transition-fast);
+}
+
+.address-link:hover {
+    color: var(--burgundy-dark);
+    text-decoration: underline;
+}
+
+.delete-form {
+    display: inline;
+}
+
+.delete-link {
+    color: #B23A48;
+}
+
+.delete-link:hover {
+    color: #8A2A36;
+}
+
+.empty-state {
+    text-align: center;
+    padding: var(--space-xl) var(--space-md);
+    color: var(--burgundy-light);
+}
+
+.empty-title {
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    color: var(--burgundy-dark);
+    margin-top: var(--space-sm);
+}
+
+.empty-subtitle {
+    font-size: 0.88rem;
+    color: #8a8a8a;
+    margin: 6px 0 var(--space-md);
+}
+
+.empty-btn {
+    width: auto;
+    padding: 13px 28px;
+    margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+    .address-grid {
+        grid-template-columns: 1fr;
+    }
+}

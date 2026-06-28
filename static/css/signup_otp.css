@@ -1,0 +1,75 @@
+/* ==========================================================================
+   LIORA — Signup OTP Page
+   ========================================================================== */
+.otp-input-group {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: var(--space-sm);
+}
+
+.otp-box {
+    width: 100%;
+    aspect-ratio: 1;
+    text-align: center;
+    font-size: 1.4rem;
+    font-weight: 600;
+    border: 1px solid var(--beige);
+    border-radius: var(--radius-sm);
+    color: var(--burgundy-dark);
+    background-color: var(--white);
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast);
+}
+
+.otp-box:focus {
+    outline: none;
+    border-color: var(--burgundy);
+    box-shadow: 0 0 0 3px rgba(109, 33, 79, 0.12);
+    transform: translateY(-2px);
+}
+
+.otp-timer-row {
+    text-align: center;
+    margin-top: var(--space-md);
+}
+
+.otp-timer {
+    font-size: 0.85rem;
+    color: #6b6b6b;
+}
+
+#countdown {
+    color: var(--burgundy);
+    font-weight: 600;
+}
+
+#countdown.expiring {
+    color: #B23A48;
+}
+
+.resend-btn {
+    display: block;
+    width: 100%;
+    text-align: center;
+    margin-top: var(--space-sm);
+    font-size: 0.88rem;
+    color: var(--burgundy-light);
+    letter-spacing: 0.03em;
+    padding: 10px;
+    border-radius: var(--radius-sm);
+    transition: color var(--transition-fast), background-color var(--transition-fast);
+}
+
+.resend-btn:not(:disabled) {
+    color: var(--burgundy);
+    font-weight: 500;
+}
+
+.resend-btn:not(:disabled):hover {
+    background-color: var(--beige-soft);
+}
+
+.resend-btn:disabled {
+    color: #b3a89e;
+    cursor: not-allowed;
+}
