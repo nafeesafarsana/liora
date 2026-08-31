@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Wallet | LIORA{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/orders.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="orders-shell">
+    <div class="orders-header">
+        <div>
+            <p class="shop-eyebrow">Account</p>
+            <h1 class="shop-title">My Wallet</h1>
+        </div>
+    </div>
+
+    <!-- Balance Card -->
+    <div class="wallet-balance-card">
+        <p class="wallet-balance-label">Available Balance</p>
+        <p class="wallet-balance-amount">₹{{ wallet.balance }}</p>
+        <p class="wallet-balance-note">
+            Use wallet balance at checkout to pay for orders.
+            Refunds from cancelled/returned orders are credited here automatically.
+        </p>
+    </div>
+
+    <!-- Transactions -->
+    <div class="order-detail-card" style="margin-top:var(--space-lg);">
+        <h2 class="order-detail-card-title">Transaction History</h2>
+
+        {% if transactions %}
+        <div class="table-responsive">
+            <table style="width:100%; border-collapse:collapse;">
+                <thead>
+                    <tr style="border-bottom:2px solid var(--beige);">
+                        <th style="text-align:left; padding:12px 8px; font-size:0.82rem; color:#6b6b6b; text-transform:uppercase; letter-spacing:0.05em;">Date</th>
+                        <th style="text-align:left; padding:12px 8px; font-size:0.82rem; color:#6b6b6b; text-transform:uppercase; letter-spacing:0.05em;">Description</th>
+                        <th style="text-align:right; padding:12px 8px; font-size:0.82rem; color:#6b6b6b; text-transform:uppercase; letter-spacing:0.05em;">Amount</th>
+                        <th style="text-align:center; padding:12px 8px; font-size:0.82rem; color:#6b6b6b; text-transform:uppercase; letter-spacing:0.05em;">Type</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for txn in transactions %}
+                    <tr style="border-bottom:1px solid var(--beige-soft);">
+                        <td style="padding:12px 8px; font-size:0.88rem; color:#6b6b6b;">
+                            {{ txn.created_at|date:"d M Y, H:i" }}
+                        </td>
+                        <td style="padding:12px 8px; font-size:0.88rem;">
+                            {{ txn.description|default:"Wallet transaction" }}
+                        </td>
+                        <td style="padding:12px 8px; font-size:0.95rem; font-weight:600; text-align:right;
+                                   color:{% if txn.transaction_type == 'credit' %}#4C8C5A{% else %}#B23A48{% endif %};">
+                            {% if txn.transaction_type == 'credit' %}+{% else %}-{% endif %}₹{{ txn.amount }}
+                        </td>
+                        <td style="padding:12px 8px; text-align:center;">
+                            <span class="order-status-pill {% if txn.transaction_type == 'credit' %}status-delivered{% else %}status-cancelled{% endif %}">
+                                {{ txn.get_transaction_type_display }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div style="text-align:center; padding:var(--space-lg); color:#6b6b6b;">
+            <p>No transactions yet. Your wallet activity will appear here.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

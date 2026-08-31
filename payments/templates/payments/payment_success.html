@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Payment Successful | LIORA{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/checkout.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="success-shell">
+    <div class="success-card">
+
+        <!-- Green checkmark -->
+        <div class="success-icon">
+            <svg width="80" height="80" viewBox="0 0 24 24"
+                 fill="none" stroke="currentColor" stroke-width="1.2">
+                <circle cx="12" cy="12" r="10"
+                        stroke="#4C8C5A" stroke-width="1.5"></circle>
+                <polyline points="7 12 10 15 17 9"
+                          stroke="#4C8C5A" stroke-width="2"></polyline>
+            </svg>
+        </div>
+
+        <p class="success-eyebrow" style="color:#4C8C5A;">Payment Confirmed</p>
+        <h1 class="success-title">Payment Successful!</h1>
+        <p class="success-subtitle">
+            Your payment was processed successfully.
+            Your order is now confirmed.
+        </p>
+
+        <div class="success-order-info">
+            <div class="success-info-row">
+                <span>Order ID</span>
+                <strong>{{ order.order_id }}</strong>
+            </div>
+            <div class="success-info-row">
+                <span>Razorpay Payment ID</span>
+                <strong style="font-size:0.82rem;">{{ order.razorpay_payment_id }}</strong>
+            </div>
+            <div class="success-info-row">
+                <span>Amount Paid</span>
+                <strong>₹{{ order.total }}</strong>
+            </div>
+            <div class="success-info-row">
+                <span>Payment Status</span>
+                <strong style="color:#4C8C5A;">Paid ✓</strong>
+            </div>
+        </div>
+
+        <div class="success-actions">
+            <a href="{% url 'orders:order_detail' order.order_id %}"
+               class="btn-primary success-btn">
+                View Order Details
+            </a>
+            <a href="{% url 'products:product_list' %}"
+               class="btn-secondary success-btn">
+                Continue Shopping
+            </a>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

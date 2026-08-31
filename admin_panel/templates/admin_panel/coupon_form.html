@@ -1,0 +1,87 @@
+{% extends 'admin_panel/admin_base.html' %}
+{% load static %}
+
+{% block title %}{{ action }} Coupon | LIORA Admin{% endblock %}
+
+{% block content %}
+{% include 'admin_panel/includes/admin_navbar.html' %}
+
+<div class="admin-shell">
+    <div class="admin-page-header">
+        <div>
+            <p class="admin-eyebrow">Marketing</p>
+            <h1 class="admin-page-title">{{ action }} Coupon</h1>
+        </div>
+        <a href="{% url 'admin_panel:coupon_list' %}" class="admin-btn-outline">&larr; Back</a>
+    </div>
+
+    <div class="admin-panel-card" style="max-width:600px;">
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="admin-form-group">
+                <label class="admin-form-label">Coupon Code</label>
+                <input type="text" name="code" class="admin-form-input"
+                       placeholder="e.g. SAVE20" required>
+            </div>
+
+            <div class="admin-form-group">
+                <label class="admin-form-label">Description</label>
+                <input type="text" name="description" class="admin-form-input"
+                       placeholder="Short description">
+            </div>
+
+            <div class="admin-form-group">
+                <label class="admin-form-label">Discount Type</label>
+                <select name="discount_type" class="admin-form-input">
+                    <option value="percentage">Percentage (%)</option>
+                    <option value="flat">Flat Amount (₹)</option>
+                </select>
+            </div>
+
+            <div class="admin-form-group">
+                <label class="admin-form-label">Discount Value</label>
+                <input type="number" name="discount_value" class="admin-form-input"
+                       placeholder="e.g. 20 for 20% or ₹20" step="0.01" required>
+            </div>
+
+            <div class="admin-form-group">
+                <label class="admin-form-label">Minimum Order Amount (₹)</label>
+                <input type="number" name="minimum_order_amount" class="admin-form-input"
+                       value="0" step="0.01">
+            </div>
+
+            <div class="admin-form-group">
+                <label class="admin-form-label">Maximum Discount (₹) — for % coupons</label>
+                <input type="number" name="maximum_discount" class="admin-form-input"
+                       placeholder="Leave empty for no cap" step="0.01">
+            </div>
+
+            <div class="admin-form-group">
+                <label class="admin-form-label">Usage Limit (0 = unlimited)</label>
+                <input type="number" name="usage_limit" class="admin-form-input" value="0">
+            </div>
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="admin-form-group">
+                        <label class="admin-form-label">Valid From</label>
+                        <input type="datetime-local" name="valid_from" class="admin-form-input" required>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="admin-form-group">
+                        <label class="admin-form-label">Valid Until</label>
+                        <input type="datetime-local" name="valid_until" class="admin-form-input" required>
+                    </div>
+                </div>
+            </div>
+
+            <div style="display:flex; gap:12px; margin-top:24px;">
+                <button type="submit" class="admin-btn-gold">Create Coupon</button>
+                <a href="{% url 'admin_panel:coupon_list' %}" class="admin-btn-outline">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

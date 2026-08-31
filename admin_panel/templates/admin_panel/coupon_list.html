@@ -1,0 +1,78 @@
+{% extends 'admin_panel/admin_base.html' %}
+{% load static %}
+
+{% block title %}Coupons | LIORA Admin{% endblock %}
+
+{% block content %}
+{% include 'admin_panel/includes/admin_navbar.html' %}
+
+<div class="admin-shell">
+    <div class="admin-page-header">
+        <div>
+            <p class="admin-eyebrow">Marketing</p>
+            <h1 class="admin-page-title">Coupon Management</h1>
+        </div>
+        <a href="{% url 'admin_panel:coupon_add' %}" class="admin-btn-gold">+ Add Coupon</a>
+    </div>
+
+    <div class="admin-panel-card">
+        <div class="table-responsive">
+            <table class="table admin-table">
+                <thead>
+                    <tr>
+                        <th>Code</th>
+                        <th>Type</th>
+                        <th>Value</th>
+                        <th>Min Order</th>
+                        <th>Used</th>
+                        <th>Valid Until</th>
+                        <th>Status</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for coupon in coupons %}
+                    <tr>
+                        <td><strong>{{ coupon.code }}</strong></td>
+                        <td>{{ coupon.get_discount_type_display }}</td>
+                        <td>
+                            {% if coupon.discount_type == 'percentage' %}
+                            {{ coupon.discount_value }}%
+                            {% else %}
+                            ₹{{ coupon.discount_value }}
+                            {% endif %}
+                        </td>
+                        <td>₹{{ coupon.minimum_order_amount }}</td>
+                        <td>{{ coupon.times_used }}{% if coupon.usage_limit %}/{{ coupon.usage_limit }}{% endif %}</td>
+                        <td>{{ coupon.valid_until|date:"d M Y" }}</td>
+                        <td>
+                            <form method="post" action="{% url 'admin_panel:coupon_toggle' coupon.pk %}">
+                                {% csrf_token %}
+                                <button type="submit"
+                                        class="admin-badge {% if coupon.is_active %}admin-badge-active{% else %}admin-badge-blocked{% endif %}">
+                                    {% if coupon.is_active %}Active{% else %}Inactive{% endif %}
+                                </button>
+                            </form>
+                        </td>
+                        <td class="text-end">
+                            <form method="post"
+                                  action="{% url 'admin_panel:coupon_delete' coupon.pk %}"
+                                  onsubmit="return confirm('Delete coupon {{ coupon.code }}?')">
+                                {% csrf_token %}
+                                <button type="submit" class="admin-action-btn admin-action-block">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8" class="text-center admin-empty-row">
+                            No coupons yet. <a href="{% url 'admin_panel:coupon_add' %}">Add one</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

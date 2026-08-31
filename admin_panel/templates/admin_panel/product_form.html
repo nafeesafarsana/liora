@@ -1,0 +1,488 @@
+{% extends 'admin_panel/admin_base.html' %}
+{% load static %}
+
+{% block title %}{{ action }} Product | LIORA Admin{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
+<style>
+    .image-upload-area {
+        border: 2px dashed var(--admin-beige);
+        border-radius: var(--admin-radius-md);
+        padding: 32px;
+        text-align: center;
+        cursor: pointer;
+        transition: border-color 0.2s ease;
+        margin-bottom: 16px;
+    }
+    .image-upload-area:hover {
+        border-color: var(--admin-gold);
+    }
+    .image-upload-area input[type="file"] {
+        display: none;
+    }
+    .upload-icon {
+        font-size: 2rem;
+        margin-bottom: 8px;
+        color: var(--admin-burgundy-light);
+    }
+    .upload-text {
+        font-size: 0.9rem;
+        color: #6b6b6b;
+    }
+    .upload-text strong {
+        color: var(--admin-burgundy);
+    }
+    .cropper-container-wrap {
+        display: none;
+        margin-top: 16px;
+    }
+    .cropper-container-wrap.active {
+        display: block;
+    }
+    #cropperImage {
+        max-width: 100%;
+        max-height: 400px;
+    }
+    .cropper-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 12px;
+    }
+    .preview-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 12px;
+        margin-top: 16px;
+    }
+    .preview-item {
+        position: relative;
+        border-radius: var(--admin-radius-sm);
+        overflow: hidden;
+        border: 2px solid var(--admin-beige);
+    }
+    .preview-item img {
+        width: 100%;
+        aspect-ratio: 1;
+        object-fit: cover;
+        display: block;
+    }
+    .preview-item .remove-preview {
+        position: absolute;
+        top: 4px;
+        right: 4px;
+        background: rgba(178, 58, 72, 0.9);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 22px;
+        height: 22px;
+        font-size: 0.75rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .preview-item .primary-badge {
+        position: absolute;
+        bottom: 4px;
+        left: 4px;
+        background: var(--admin-gold);
+        color: var(--admin-burgundy-dark);
+        font-size: 0.65rem;
+        font-weight: 700;
+        padding: 2px 6px;
+        border-radius: 999px;
+    }
+    .existing-image-item {
+        position: relative;
+        border-radius: var(--admin-radius-sm);
+        overflow: hidden;
+        border: 2px solid var(--admin-beige);
+    }
+    .existing-image-item img {
+        width: 100%;
+        aspect-ratio: 1;
+        object-fit: cover;
+        display: block;
+    }
+    .existing-image-item .delete-existing-image-btn {
+        position: absolute;
+        top: 4px;
+        right: 4px;
+        background: rgba(178, 58, 72, 0.9);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 22px;
+        height: 22px;
+        font-size: 0.75rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .image-count-info {
+        font-size: 0.82rem;
+        color: #6b6b6b;
+        margin-top: 8px;
+    }
+    .image-count-info.error {
+        color: var(--admin-danger);
+    }
+    .form-section-title {
+        font-family: var(--admin-font-display);
+        font-size: 1.1rem;
+        color: var(--admin-burgundy-dark);
+        margin-bottom: 16px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--admin-beige-soft);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+{% include 'admin_panel/includes/admin_navbar.html' %}
+
+<div class="admin-shell">
+    <div class="admin-page-header">
+        <div>
+            <p class="admin-eyebrow">Products</p>
+            <h1 class="admin-page-title">{{ action }} Product</h1>
+        </div>
+        <a href="{% url 'admin_panel:product_list' %}" class="admin-btn-outline">&larr; Back to Products</a>
+    </div>
+
+    <form method="post" id="productForm">
+        {% csrf_token %}
+
+        <div class="row g-4">
+            <!-- Left column: product details -->
+            <div class="col-lg-7">
+                <div class="admin-panel-card">
+                    <h3 class="form-section-title">Product Details</h3>
+
+                    <div class="admin-form-group">
+                        <label class="admin-form-label" for="{{ form.name.id_for_label }}">Product Name</label>
+                        {{ form.name }}
+                        {% if form.name.errors %}<span class="admin-form-error">{{ form.name.errors.0 }}</span>{% endif %}
+                    </div>
+
+                    <div class="admin-form-group">
+                        <label class="admin-form-label" for="{{ form.category.id_for_label }}">Category</label>
+                        {{ form.category }}
+                        {% if form.category.errors %}<span class="admin-form-error">{{ form.category.errors.0 }}</span>{% endif %}
+                    </div>
+
+                    <div class="admin-form-group">
+                        <label class="admin-form-label" for="{{ form.brand.id_for_label }}">Brand</label>
+                        {{ form.brand }}
+                        {% if form.brand.errors %}<span class="admin-form-error">{{ form.brand.errors.0 }}</span>{% endif %}
+                    </div>
+
+                    <div class="admin-form-group">
+                        <label class="admin-form-label" for="{{ form.description.id_for_label }}">Description</label>
+                        {{ form.description }}
+                        {% if form.description.errors %}<span class="admin-form-error">{{ form.description.errors.0 }}</span>{% endif %}
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <div class="admin-form-group">
+                                <label class="admin-form-label" for="{{ form.price.id_for_label }}">Price (₹)</label>
+                                {{ form.price }}
+                                {% if form.price.errors %}<span class="admin-form-error">{{ form.price.errors.0 }}</span>{% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="admin-form-group">
+                                <label class="admin-form-label" for="{{ form.discount_price.id_for_label }}">Discount Price (₹)</label>
+                                {{ form.discount_price }}
+                                {% if form.discount_price.errors %}<span class="admin-form-error">{{ form.discount_price.errors.0 }}</span>{% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="admin-form-group">
+                                <label class="admin-form-label" for="{{ form.stock.id_for_label }}">Stock</label>
+                                {{ form.stock }}
+                                {% if form.stock.errors %}<span class="admin-form-error">{{ form.stock.errors.0 }}</span>{% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="admin-form-group">
+                        <label class="admin-form-check-label">
+                            {{ form.is_listed }}
+                            <span style="margin-left: 8px; font-size: 0.9rem;">List this product (visible to users)</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+<!-- Colors Section -->
+<div class="admin-panel-card" style="margin-top: 20px;">
+    <h3 class="form-section-title">
+        Color Variants
+        <span style="color:#6b6b6b; font-size:0.8rem;">(optional — leave empty if no variants)</span>
+    </h3>
+
+    {{ color_formset.management_form }}
+
+    {% if action == 'Edit' and product.colors.exists %}
+    <p style="font-size:0.82rem; color:#6b6b6b; margin-bottom:16px;">
+        Existing variants — check "Remove" to delete a variant.
+    </p>
+    {% endif %}
+
+    <div id="colorFormsetContainer">
+        {% for color_form in color_formset %}
+        <div class="color-form-row">
+            {% for hidden in color_form.hidden_fields %}{{ hidden }}{% endfor %}
+
+            {% if color_form.instance.pk %}
+            <div class="color-form-existing-label">
+                <span class="color-swatch-preview"
+                      style="background-color: {{ color_form.instance.hex_code }};">
+                </span>
+                <strong>{{ color_form.instance.name }}</strong>
+                <span style="color:#6b6b6b; font-size:0.82rem;">
+                    (stock: {{ color_form.instance.stock }})
+                </span>
+            </div>
+            {% endif %}
+
+            <div class="color-form-fields">
+                <div class="admin-form-group" style="flex:1;">
+                    <label class="admin-form-label">Color Name</label>
+                    {{ color_form.name }}
+                    {% if color_form.name.errors %}
+                    <span class="admin-form-error">{{ color_form.name.errors.0 }}</span>
+                    {% endif %}
+                </div>
+
+                <div class="admin-form-group" style="width:70px;">
+                    <label class="admin-form-label">Color</label>
+                    {{ color_form.hex_code }}
+                </div>
+
+                <div class="admin-form-group" style="width:120px;">
+                    <label class="admin-form-label">Stock</label>
+                    {{ color_form.stock }}
+                    {% if color_form.stock.errors %}
+                    <span class="admin-form-error">{{ color_form.stock.errors.0 }}</span>
+                    {% endif %}
+                </div>
+
+                {% if color_form.instance.pk %}
+                <div class="admin-form-group" style="width:90px; padding-top:26px;">
+                    <label style="display:flex; align-items:center; gap:6px;
+                                  font-size:0.82rem; color:#B23A48; cursor:pointer;">
+                        {{ color_form.DELETE }}
+                        <span>Remove</span>
+                    </label>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% if not forloop.last %}
+        <hr style="border:none; border-top:1px solid var(--admin-beige-soft); margin:12px 0;">
+        {% endif %}
+        {% endfor %}
+    </div>
+</div>
+            <!-- Right column: images -->
+            <div class="col-lg-5">
+                <div class="admin-panel-card">
+                    <h3 class="form-section-title">Product Images <span style="color:#6b6b6b; font-size:0.8rem;">(minimum 3)</span></h3>
+
+                    {% if existing_images %}
+                    <p style="font-size:0.85rem; color:#6b6b6b; margin-bottom:12px;">Existing Images</p>
+                    <div class="preview-grid" id="existingImagesGrid">
+                        {% for img in existing_images %}
+                        <div class="existing-image-item">
+                            <img src="{{ img.image.url }}" alt="Product image">
+                            {% if img.is_primary %}
+                                <span class="primary-badge">Primary</span>
+                            {% endif %}
+                            <button type="button" class="delete-existing-image-btn"
+                                    data-url="{% url 'admin_panel:product_image_delete' img.pk %}">&times;</button>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <hr style="margin: 16px 0; border-color: var(--admin-beige);">
+                    <p style="font-size:0.85rem; color:#6b6b6b; margin-bottom:12px;">Add More Images</p>
+                    {% endif %}
+
+                    <!-- Upload area -->
+                    <div class="image-upload-area" id="uploadArea" onclick="document.getElementById('imageFileInput').click()">
+                        <input type="file" id="imageFileInput" accept="image/*">
+                        <div class="upload-icon">📷</div>
+                        <p class="upload-text">
+                            <strong>Click to select an image</strong><br>
+                            JPG, PNG, WebP supported
+                        </p>
+                    </div>
+
+                    <!-- Cropper tool (hidden until image selected) -->
+                    <div class="cropper-container-wrap" id="cropperWrap">
+                        <img id="cropperImage" src="" alt="Crop this image">
+                        <div class="cropper-actions">
+                            <button type="button" class="admin-btn-gold" id="cropBtn">✓ Crop & Add</button>
+                            <button type="button" class="admin-btn-outline" id="cancelCropBtn">Cancel</button>
+                        </div>
+                    </div>
+
+                    <!-- Preview grid for new images -->
+                    <div class="preview-grid" id="previewGrid"></div>
+                    <p class="image-count-info" id="imageCountInfo"></p>
+
+                    <!-- Hidden inputs for cropped image data -->
+                    <div id="croppedInputs"></div>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-top: 24px; display: flex; gap: 12px;">
+            <button type="submit" class="admin-btn-gold" id="submitBtn">
+                {% if action == 'Add' %}Add Product{% else %}Save Changes{% endif %}
+            </button>
+            <a href="{% url 'admin_panel:product_list' %}" class="admin-btn-outline">Cancel</a>
+        </div>
+    </form>
+
+    <!-- Standalone hidden form used to delete an existing image via JS -->
+    <form method="post" id="deleteImageForm" style="display:none;">
+        {% csrf_token %}
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const fileInput = document.getElementById('imageFileInput');
+    const cropperWrap = document.getElementById('cropperWrap');
+    const cropperImage = document.getElementById('cropperImage');
+    const cropBtn = document.getElementById('cropBtn');
+    const cancelCropBtn = document.getElementById('cancelCropBtn');
+    const previewGrid = document.getElementById('previewGrid');
+    const croppedInputs = document.getElementById('croppedInputs');
+    const imageCountInfo = document.getElementById('imageCountInfo');
+    const existingCount = {{ existing_images|length|default:0 }};
+
+    let cropper = null;
+    let croppedImages = [];
+
+    function updateImageCount() {
+        const total = existingCount + croppedImages.length;
+        imageCountInfo.textContent = `${total} image(s) added (minimum 3 required)`;
+        imageCountInfo.className = 'image-count-info' + (total < 3 ? ' error' : '');
+    }
+
+    updateImageCount();
+
+    // When user picks a file
+    fileInput.addEventListener('change', function () {
+        const file = fileInput.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            cropperImage.src = e.target.result;
+            cropperWrap.classList.add('active');
+
+            if (cropper) {
+                cropper.destroy();
+            }
+
+            cropper = new Cropper(cropperImage, {
+                aspectRatio: 1,
+                viewMode: 1,
+                dragMode: 'move',
+                autoCropArea: 0.8,
+                responsive: true,
+                guides: true,
+                highlight: true,
+            });
+        };
+        reader.readAsDataURL(file);
+        fileInput.value = '';
+    });
+
+    // Crop button clicked
+    cropBtn.addEventListener('click', function () {
+        if (!cropper) return;
+
+        const canvas = cropper.getCroppedCanvas({
+            width: 800,
+            height: 800,
+            imageSmoothingEnabled: true,
+            imageSmoothingQuality: 'high',
+        });
+
+        const imageData = canvas.toDataURL('image/jpeg', 0.9);
+        croppedImages.push(imageData);
+
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'cropped_images[]';
+        input.value = imageData;
+        croppedInputs.appendChild(input);
+
+        const index = croppedImages.length - 1;
+        const previewItem = document.createElement('div');
+        previewItem.className = 'preview-item';
+        previewItem.innerHTML = `
+            <img src="${imageData}" alt="Preview">
+            ${index === 0 && existingCount === 0 ? '<span class="primary-badge">Primary</span>' : ''}
+            <button type="button" class="remove-preview" data-index="${index}">&times;</button>
+        `;
+        previewGrid.appendChild(previewItem);
+
+        previewItem.querySelector('.remove-preview').addEventListener('click', function () {
+            const idx = parseInt(this.getAttribute('data-index'));
+            croppedImages.splice(idx, 1);
+            const inputs = croppedInputs.querySelectorAll('input');
+            inputs[idx].remove();
+            previewItem.remove();
+            updateImageCount();
+        });
+
+        cropperWrap.classList.remove('active');
+        cropper.destroy();
+        cropper = null;
+
+        updateImageCount();
+    });
+
+    // Cancel crop
+    cancelCropBtn.addEventListener('click', function () {
+        cropperWrap.classList.remove('active');
+        if (cropper) {
+            cropper.destroy();
+            cropper = null;
+        }
+    });
+
+    // Delete existing image (uses standalone hidden form, no nested forms)
+    document.querySelectorAll('.delete-existing-image-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            if (!confirm('Delete this image?')) return;
+            const deleteForm = document.getElementById('deleteImageForm');
+            deleteForm.action = btn.getAttribute('data-url');
+            deleteForm.submit();
+        });
+    });
+
+    // Form submit validation
+    document.getElementById('productForm').addEventListener('submit', function (e) {
+        const total = existingCount + croppedImages.length;
+        if (total < 3) {
+            e.preventDefault();
+            alert('Please add at least 3 product images before saving.');
+            imageCountInfo.classList.add('error');
+        }
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Orders | LIORA{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/orders.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="orders-shell">
+    <div class="orders-header">
+        <p class="shop-eyebrow">Account</p>
+        <h1 class="shop-title">My Orders</h1>
+    </div>
+
+    <!-- Search -->
+    <form method="get" action="{% url 'orders:order_list' %}" class="orders-search-form">
+        <div class="orders-search-wrap">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input type="text" name="q" value="{{ query }}"
+                   placeholder="Search by Order ID or status..."
+                   class="orders-search-input">
+        </div>
+        <button type="submit" class="btn-primary orders-search-btn">Search</button>
+        {% if query %}
+        <a href="{% url 'orders:order_list' %}" class="btn-secondary orders-clear-btn">Clear</a>
+        {% endif %}
+    </form>
+
+    {% if page_obj %}
+    <div class="orders-list">
+        {% for order in page_obj %}
+        <div class="order-card">
+            <div class="order-card-header">
+                <div class="order-card-id">
+                    <p class="order-id-label">Order ID</p>
+                    <p class="order-id-value">{{ order.order_id }}</p>
+                </div>
+                <div class="order-card-meta">
+                    <p class="order-date">{{ order.created_at|date:"d M Y" }}</p>
+                    <span class="order-status-pill status-{{ order.status }}">
+                        {{ order.get_status_display }}
+                    </span>
+                </div>
+            </div>
+
+            <div class="order-items-preview">
+                {% for item in order.items.all|slice:":3" %}
+                <div class="order-preview-item">
+                    {% if item.product_image %}
+                    <img src="/media/{{ item.product_image }}" alt="{{ item.product_name }}">
+                    {% else %}
+                    <div class="order-preview-placeholder">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+                            <path d="M6 7h12l1 13H5L6 7z"></path>
+                        </svg>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+                {% if order.item_count > 3 %}
+                <div class="order-preview-more">+{{ order.item_count|add:"-3" }} more</div>
+                {% endif %}
+            </div>
+
+            <div class="order-card-footer">
+                <p class="order-total">Total: <strong>₹{{ order.total }}</strong></p>
+                <div class="order-card-actions">
+                    <a href="{% url 'orders:order_detail' order.order_id %}"
+                       class="btn-primary order-view-btn">
+                        View Details
+                    </a>
+                    {% if order.status in 'pending shipped' %}
+                    <a href="{% url 'orders:order_detail' order.order_id %}"
+                       class="btn-secondary order-view-btn">
+                        Cancel
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if page_obj.paginator.num_pages > 1 %}
+    <nav class="shop-pagination" style="margin-top: var(--space-lg);">
+        <ul class="pagination-list">
+            {% if page_obj.has_previous %}
+            <li><a href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query }}{% endif %}" class="page-btn">&larr; Previous</a></li>
+            {% else %}
+            <li><span class="page-btn disabled">&larr; Previous</span></li>
+            {% endif %}
+
+            {% for page_num in page_obj.paginator.page_range %}
+                {% if page_num == page_obj.number %}
+                <li><span class="page-btn active">{{ page_num }}</span></li>
+                {% elif page_num > page_obj.number|add:"-3" and page_num < page_obj.number|add:"3" %}
+                <li><a href="?page={{ page_num }}{% if query %}&q={{ query }}{% endif %}" class="page-btn">{{ page_num }}</a></li>
+                {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+            <li><a href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query }}{% endif %}" class="page-btn">Next &rarr;</a></li>
+            {% else %}
+            <li><span class="page-btn disabled">Next &rarr;</span></li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+
+    {% else %}
+    <div class="orders-empty">
+        <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+            <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"></path>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <path d="M16 10a4 4 0 01-8 0"></path>
+        </svg>
+        <h3>No orders yet</h3>
+        <p>Start shopping and your orders will appear here.</p>
+        <a href="{% url 'products:product_list' %}" class="btn-primary" style="width:auto; padding:14px 32px;">
+            Shop Now
+        </a>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

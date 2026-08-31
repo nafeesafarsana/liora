@@ -1,0 +1,59 @@
+{% extends 'admin_panel/admin_base.html' %}
+{% load static %}
+
+{% block title %}{{ action }} Category | LIORA Admin{% endblock %}
+
+{% block content %}
+{% include 'admin_panel/includes/admin_navbar.html' %}
+
+<div class="admin-shell">
+    <div class="admin-page-header">
+        <div>
+            <p class="admin-eyebrow">Categories</p>
+            <h1 class="admin-page-title">{{ action }} Category</h1>
+        </div>
+        <a href="{% url 'admin_panel:category_list' %}" class="admin-btn-outline">
+            &larr; Back to Categories
+        </a>
+    </div>
+
+    <div class="admin-panel-card" style="max-width: 600px;">
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="admin-form-group">
+                <label class="admin-form-label" for="{{ form.name.id_for_label }}">Category Name</label>
+                {{ form.name }}
+                {% if form.name.errors %}
+                    <span class="admin-form-error">{{ form.name.errors.0 }}</span>
+                {% endif %}
+            </div>
+
+            <div class="admin-form-group">
+                <label class="admin-form-label" for="{{ form.description.id_for_label }}">Description</label>
+                {{ form.description }}
+                {% if form.description.errors %}
+                    <span class="admin-form-error">{{ form.description.errors.0 }}</span>
+                {% endif %}
+            </div>
+
+            <div class="admin-form-group">
+                <label class="admin-form-check-label">
+                    {{ form.is_listed }}
+                    <span style="margin-left: 8px; font-size: 0.9rem;">List this category (visible to users)</span>
+                </label>
+                {% if form.is_listed.errors %}
+                    <span class="admin-form-error">{{ form.is_listed.errors.0 }}</span>
+                {% endif %}
+            </div>
+
+            <div class="admin-modal-footer" style="padding: 0; margin-top: 28px; border: none;">
+                <button type="submit" class="admin-btn-gold">
+                    {% if action == 'Add' %}Add Category{% else %}Save Changes{% endif %}
+                </button>
+                <a href="{% url 'admin_panel:category_list' %}" class="admin-btn-outline">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

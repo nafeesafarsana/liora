@@ -6,17 +6,21 @@ from django.shortcuts import render, redirect, get_object_or_404
 from accounts.models import OTP
 from accounts.forms import OTPForm
 from accounts.utils import send_otp_email
-
-from .forms import EditProfileForm, ChangePasswordForm, AddressForm
-from .models import Address
-
+from .forms import EditProfileForm, ChangePasswordForm, AddressForm, ProfilePictureForm
+from .models import Address, Profile
+from allauth.socialaccount.models import SocialAccount
+    
 
 # ------------------------------------------------------------------
 # PROFILE
 # ------------------------------------------------------------------
 @login_required
 def profile_view(request):
-    return render(request, 'profile_app/profile.html')
+    profile, created = Profile.objects.get_or_create(user=request.user)
+    return render(request, 'profile_app/profile.html', {'profile': profile})
+
+
+
 
 
 @login_required
@@ -25,11 +29,14 @@ def edit_profile_view(request):
 
     if request.method == 'POST':
         form = EditProfileForm(request.POST, current_user=user)
-        if form.is_valid():
+        picture_form = ProfilePictureForm(request.POST, request.FILES, instance=user.profile)
+
+        if form.is_valid() and picture_form.is_valid():
             new_email = form.cleaned_data['email']
 
+            picture_form.save()  # saves the uploaded image (if one was provided)
+
             if new_email != user.email:
-                # Email changed -> needs OTP verification before applying
                 request.session['pending_profile_update'] = {
                     'first_name': form.cleaned_data['first_name'],
                     'last_name': form.cleaned_data['last_name'],
@@ -53,9 +60,12 @@ def edit_profile_view(request):
             'last_name': user.last_name,
             'email': user.email,
         }, current_user=user)
+        picture_form = ProfilePictureForm(instance=user.profile)
 
-    return render(request, 'profile_app/edit_profile.html', {'form': form})
-
+    return render(request, 'profile_app/edit_profile.html', {
+        'form': form,
+        'picture_form': picture_form,
+    })
 
 @login_required
 def verify_email_change_view(request):
@@ -114,14 +124,21 @@ def resend_email_change_otp_view(request):
     return redirect('profile_app:verify_email_change')
 
 
+
 @login_required
 def change_password_view(request):
+    
+    
+    if SocialAccount.objects.filter(user=request.user, provider='google').exists():
+        messages.error(request, "Google account users cannot change their password here.")
+        return redirect('profile_app:profile')
+
     if request.method == 'POST':
         form = ChangePasswordForm(request.POST, user=request.user)
         if form.is_valid():
             request.user.set_password(form.cleaned_data['new_password'])
             request.user.save()
-            update_session_auth_hash(request, request.user)  # keep user logged in
+            update_session_auth_hash(request, request.user)
             messages.success(request, "Your password has been changed successfully.")
             return redirect('profile_app:profile')
         else:
@@ -130,7 +147,6 @@ def change_password_view(request):
         form = ChangePasswordForm(user=request.user)
 
     return render(request, 'profile_app/change_password.html', {'form': form})
-
 
 # ------------------------------------------------------------------
 # ADDRESS MANAGEMENT
@@ -143,44 +159,62 @@ def address_list_view(request):
 
 @login_required
 def add_address_view(request):
+    next_url = request.GET.get('next', '') or request.POST.get('next', '')
+
     if request.method == 'POST':
         form = AddressForm(request.POST)
         if form.is_valid():
             address = form.save(commit=False)
             address.user = request.user
             if address.is_default:
-                Address.objects.filter(user=request.user, is_default=True).update(is_default=False)
+                Address.objects.filter(
+                    user=request.user, is_default=True
+                ).update(is_default=False)
             address.save()
             messages.success(request, "Address added successfully.")
+
+            if next_url:
+                return redirect(next_url)
             return redirect('profile_app:address_list')
         else:
             messages.error(request, "Please correct the errors below.")
     else:
         form = AddressForm()
 
-    return render(request, 'profile_app/add_address.html', {'form': form})
-
-
+    return render(request, 'profile_app/add_address.html', {
+        'form': form,
+        'next': next_url,
+    })
+    
 @login_required
 def edit_address_view(request, pk):
     address = get_object_or_404(Address, pk=pk, user=request.user)
+    next_url = request.GET.get('next', '') or request.POST.get('next', '')
 
     if request.method == 'POST':
         form = AddressForm(request.POST, instance=address)
         if form.is_valid():
             updated_address = form.save(commit=False)
             if updated_address.is_default:
-                Address.objects.filter(user=request.user, is_default=True).exclude(pk=address.pk).update(is_default=False)
+                Address.objects.filter(
+                    user=request.user, is_default=True
+                ).exclude(pk=address.pk).update(is_default=False)
             updated_address.save()
             messages.success(request, "Address updated successfully.")
+
+            if next_url:
+                return redirect(next_url)
             return redirect('profile_app:address_list')
         else:
             messages.error(request, "Please correct the errors below.")
     else:
         form = AddressForm(instance=address)
 
-    return render(request, 'profile_app/edit_address.html', {'form': form, 'address': address})
-
+    return render(request, 'profile_app/edit_address.html', {
+        'form': form,
+        'address': address,
+        'next': next_url,
+    })
 
 @login_required
 def delete_address_view(request, pk):

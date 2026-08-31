@@ -1,0 +1,153 @@
+{% extends 'admin_panel/admin_base.html' %}
+{% load static %}
+
+{% block title %}Orders | LIORA Admin{% endblock %}
+
+{% block content %}
+{% include 'admin_panel/includes/admin_navbar.html' %}
+
+<div class="admin-shell">
+    <div class="admin-page-header">
+        <div>
+            <p class="admin-eyebrow">Management</p>
+            <h1 class="admin-page-title">Order Management</h1>
+        </div>
+    </div>
+
+    <div class="admin-panel-card">
+
+        <!-- Search + Filter -->
+        <div class="admin-panel-card-header admin-um-header">
+            <form method="get" action="{% url 'admin_panel:admin_order_list' %}" class="admin-search-form">
+                <div class="admin-search-input-wrap">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <input type="text" name="q" value="{{ query }}"
+                           placeholder="Search by Order ID, email, name..."
+                           class="admin-search-input">
+                </div>
+
+                <select name="status" class="admin-filter-select" onchange="this.form.submit()">
+                    <option value="">All Statuses</option>
+                    {% for value, label in status_choices %}
+                    <option value="{{ value }}" {% if status_filter == value %}selected{% endif %}>
+                        {{ label }}
+                    </option>
+                    {% endfor %}
+                </select>
+
+                <button type="submit" class="admin-btn-gold admin-search-btn">Search</button>
+                {% if query or status_filter %}
+                <a href="{% url 'admin_panel:admin_order_list' %}"
+                   class="admin-btn-outline admin-clear-btn">Clear</a>
+                {% endif %}
+            </form>
+        </div>
+
+        {% if query or status_filter %}
+        <p class="admin-search-meta">
+            Showing <strong>{{ total_results }}</strong> order{{ total_results|pluralize }}
+            {% if query %}for "<strong>{{ query }}</strong>"{% endif %}
+            {% if status_filter %}with status "<strong>{{ status_filter }}</strong>"{% endif %}
+        </p>
+        {% endif %}
+
+        <div class="table-responsive">
+            <table class="table admin-table">
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Date</th>
+                        <th>Customer</th>
+                        <th>Email</th>
+                        <th>Items</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                        <th class="text-end">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in page_obj %}
+                    <tr>
+                        <td><strong>{{ order.order_id }}</strong></td>
+                        <td>{{ order.created_at|date:"d M Y, H:i" }}</td>
+                        <td>{{ order.full_name }}</td>
+                        <td>{{ order.user.email|default:"—" }}</td>
+                        <td>{{ order.item_count }} item{{ order.item_count|pluralize }}</td>
+                        <td>₹{{ order.total }}</td>
+                        <td>
+                            <span class="order-status-badge status-{{ order.status }}">
+                                {{ order.get_status_display }}
+                            </span>
+                        </td>
+                        <td class="text-end">
+                            <a href="{% url 'admin_panel:admin_order_detail' order.order_id %}"
+                               class="admin-action-btn admin-action-unblock">
+                               View Detail
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8" class="text-center admin-empty-row">
+                            {% if query %}
+                            No orders found for "{{ query }}"
+                            {% else %}
+                            No orders yet.
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        {% if page_obj.paginator.num_pages > 1 %}
+        <nav class="admin-pagination">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link"
+                       href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}">
+                       Previous
+                    </a>
+                </li>
+                {% else %}
+                <li class="page-item disabled"><span class="page-link">Previous</span></li>
+                {% endif %}
+
+                {% for page_num in page_obj.paginator.page_range %}
+                    {% if page_num == page_obj.number %}
+                    <li class="page-item active">
+                        <span class="page-link">{{ page_num }}</span>
+                    </li>
+                    {% else %}
+                    <li class="page-item">
+                        <a class="page-link"
+                           href="?page={{ page_num }}{% if query %}&q={{ query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}">
+                           {{ page_num }}
+                        </a>
+                    </li>
+                    {% endif %}
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link"
+                       href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}">
+                       Next
+                    </a>
+                </li>
+                {% else %}
+                <li class="page-item disabled"><span class="page-link">Next</span></li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+
+    </div>
+</div>
+{% endblock %}

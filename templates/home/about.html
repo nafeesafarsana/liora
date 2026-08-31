@@ -1,0 +1,424 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}About | LIORA{% endblock %}
+
+{% block extra_css %}
+<style>
+    .about-shell {
+        min-height: 100vh;
+    }
+
+    /* Hero section */
+    .about-hero {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        min-height: 90vh;
+    }
+
+    /* Left — photo side */
+    .about-hero-image {
+        position: relative;
+        overflow: hidden;
+        background-color: #1a3a2a;
+    }
+
+    .about-hero-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center top;
+        opacity: 0.85;
+        filter: grayscale(20%) sepia(10%);
+    }
+
+    .about-founder-tag {
+        position: absolute;
+        bottom: 40px;
+        left: 40px;
+        color: white;
+    }
+
+    .about-founder-tag-label {
+        font-size: 0.72rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: #C8A96B;
+        margin-bottom: 6px;
+    }
+
+    .about-founder-tag-name {
+        font-family: 'Playfair Display', Georgia, serif;
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: white;
+        margin: 0 0 8px 0;
+    }
+
+    .about-founder-tag-quote {
+        font-size: 0.82rem;
+        color: rgba(255,255,255,0.75);
+        font-style: italic;
+        max-width: 260px;
+        line-height: 1.5;
+        margin: 0;
+    }
+
+    /* Right — story side */
+    .about-hero-content {
+        background-color: #FAF7F2;
+        padding: 80px 72px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .about-eyebrow {
+        font-size: 0.75rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: #C8A96B;
+        margin-bottom: 20px;
+    }
+
+    .about-headline {
+        font-family: 'Playfair Display', Georgia, serif;
+        font-size: 2.8rem;
+        line-height: 1.15;
+        color: #1a0a12;
+        margin-bottom: 28px;
+    }
+
+    .about-headline em {
+        color: #C8A96B;
+        font-style: italic;
+    }
+
+    .about-body {
+        font-size: 0.95rem;
+        color: #5a5a5a;
+        line-height: 1.9;
+        margin-bottom: 20px;
+        max-width: 520px;
+    }
+
+    .about-divider {
+        width: 48px;
+        height: 2px;
+        background-color: #C8A96B;
+        margin: 36px 0;
+    }
+
+    .about-signature {
+        font-family: 'Playfair Display', Georgia, serif;
+        font-size: 1.5rem;
+        font-style: italic;
+        color: #4A1836;
+        margin: 0 0 4px 0;
+    }
+
+    .about-signature-title {
+        font-size: 0.78rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: #C8A96B;
+    }
+
+    /* Stats section */
+    .about-stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        background-color: #4A1836;
+        padding: 56px 80px;
+        gap: 0;
+    }
+
+    .about-stat {
+        text-align: center;
+        padding: 0 32px;
+        border-right: 1px solid rgba(200, 169, 107, 0.3);
+    }
+
+    .about-stat:last-child {
+        border-right: none;
+    }
+
+    .about-stat-number {
+        font-family: 'Playfair Display', Georgia, serif;
+        font-size: 3rem;
+        color: #C8A96B;
+        font-weight: 700;
+        display: block;
+        line-height: 1;
+        margin-bottom: 8px;
+    }
+
+    .about-stat-label {
+        font-size: 0.82rem;
+        color: rgba(255,255,255,0.7);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+    }
+
+    /* Mission section */
+    .about-mission {
+        padding: 100px 80px;
+        max-width: 900px;
+        margin: 0 auto;
+        text-align: center;
+    }
+
+    .about-mission-eyebrow {
+        font-size: 0.75rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: #C8A96B;
+        margin-bottom: 20px;
+    }
+
+    .about-mission-title {
+        font-family: 'Playfair Display', Georgia, serif;
+        font-size: 2.2rem;
+        color: #1a0a12;
+        margin-bottom: 24px;
+        line-height: 1.3;
+    }
+
+    .about-mission-text {
+        font-size: 1rem;
+        color: #5a5a5a;
+        line-height: 1.9;
+        max-width: 680px;
+        margin: 0 auto;
+    }
+
+    /* Values */
+    .about-values {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1px;
+        background-color: #E8DCCB;
+        border-top: 1px solid #E8DCCB;
+    }
+
+    .about-value-card {
+        background-color: #FAF7F2;
+        padding: 52px 48px;
+        text-align: center;
+    }
+
+    .about-value-icon {
+        font-size: 2rem;
+        margin-bottom: 16px;
+        display: block;
+    }
+
+    .about-value-title {
+        font-family: 'Playfair Display', Georgia, serif;
+        font-size: 1.15rem;
+        color: #4A1836;
+        margin-bottom: 12px;
+    }
+
+    .about-value-text {
+        font-size: 0.88rem;
+        color: #6b6b6b;
+        line-height: 1.7;
+    }
+
+    /* CTA */
+    .about-cta {
+        text-align: center;
+        padding: 80px 40px;
+        background-color: white;
+    }
+
+    .about-cta-title {
+        font-family: 'Playfair Display', Georgia, serif;
+        font-size: 2rem;
+        color: #1a0a12;
+        margin-bottom: 12px;
+    }
+
+    .about-cta-sub {
+        font-size: 0.95rem;
+        color: #6b6b6b;
+        margin-bottom: 28px;
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+        .about-hero {
+            grid-template-columns: 1fr;
+            min-height: auto;
+        }
+
+        .about-hero-image {
+            height: 60vh;
+        }
+
+        .about-hero-content {
+            padding: 48px 32px;
+        }
+
+        .about-headline {
+            font-size: 2rem;
+        }
+
+        .about-stats {
+            grid-template-columns: 1fr;
+            padding: 40px 32px;
+            gap: 32px;
+        }
+
+        .about-stat {
+            border-right: none;
+            border-bottom: 1px solid rgba(200, 169, 107, 0.3);
+            padding-bottom: 32px;
+        }
+
+        .about-stat:last-child {
+            border-bottom: none;
+        }
+
+        .about-values {
+            grid-template-columns: 1fr;
+        }
+
+        .about-mission {
+            padding: 60px 32px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="about-shell">
+
+    <!-- HERO — Photo + Story -->
+    <section class="about-hero">
+
+        <!-- Left: Your Photo -->
+        <div class="about-hero-image">
+            <img src="{% static 'images/founder.jpg' %}"
+                 alt="Nafeesa Farsana — Founder of LIORA"
+                 class="about-hero-img">
+
+            <!-- Founder tag overlaid on photo -->
+            <div class="about-founder-tag">
+                <p class="about-founder-tag-label">Founder &amp; Creator</p>
+                <h2 class="about-founder-tag-name">Nafeesa Farsana</h2>
+                <p class="about-founder-tag-quote">
+                    "Luxury is not a price tag —<br>
+                    it is intention made visible."
+                </p>
+            </div>
+        </div>
+
+        <!-- Right: Story -->
+        <div class="about-hero-content">
+            <p class="about-eyebrow">Our Founding Story</p>
+
+            <h1 class="about-headline">
+                Born from a <em>love</em><br>
+                for the extraordinary
+            </h1>
+
+            <p class="about-body">
+                LIORA was born in 2025, from a single belief: that true luxury
+                is not about excess — it is the quiet certainty of something
+                made exactly right.
+            </p>
+
+            <p class="about-body">
+                I'm Nafeesa Farsana. At 18, I built LIORA from the ground up —
+                not just as a store, but as a statement. Every handbag we carry
+                is chosen with care, every detail considered, every customer
+                treated as someone who deserves something extraordinary.
+            </p>
+
+            <p class="about-body">
+                What started as a passion project became a full e-commerce
+                platform — designed, developed, and launched entirely by me,
+                with every feature built to give our customers the finest
+                shopping experience possible.
+            </p>
+
+            <div class="about-divider"></div>
+
+            <p class="about-signature">Nafeesa Farsana</p>
+            <p class="about-signature-title">Founder — LIORA Luxury</p>
+        </div>
+
+    </section>
+
+    <!-- STATS -->
+    <section class="about-stats">
+        <div class="about-stat">
+            <span class="about-stat-number">18</span>
+            <span class="about-stat-label">Age when LIORA was built</span>
+        </div>
+        <div class="about-stat">
+            <span class="about-stat-number">2025</span>
+            <span class="about-stat-label">Year Founded</span>
+        </div>
+        <div class="about-stat">
+            <span class="about-stat-number">100%</span>
+            <span class="about-stat-label">Built from Scratch</span>
+        </div>
+    </section>
+
+    <!-- MISSION -->
+    <section class="about-mission">
+        <p class="about-mission-eyebrow">Our Mission</p>
+        <h2 class="about-mission-title">
+            Every bag tells a story.<br>We help you find yours.
+        </h2>
+        <p class="about-mission-text">
+            At LIORA, we believe the things you carry should feel like an
+            extension of yourself — quietly confident, enduring, and worthy
+            of the life lived alongside them. We source only the finest
+            handbags, curated with intention and delivered with care.
+        </p>
+    </section>
+
+    <!-- VALUES -->
+    <section class="about-values">
+        <div class="about-value-card">
+            <span class="about-value-icon">✦</span>
+            <h3 class="about-value-title">Craftsmanship</h3>
+            <p class="about-value-text">
+                Every product is carefully selected for quality,
+                material, and lasting elegance.
+            </p>
+        </div>
+        <div class="about-value-card">
+            <span class="about-value-icon">◈</span>
+            <h3 class="about-value-title">Integrity</h3>
+            <p class="about-value-text">
+                Honest pricing, transparent practices,
+                and a commitment to our customers above all.
+            </p>
+        </div>
+        <div class="about-value-card">
+            <span class="about-value-icon">❋</span>
+            <h3 class="about-value-title">Elegance</h3>
+            <p class="about-value-text">
+                Beauty in every detail — from product to packaging
+                to the experience of shopping with us.
+            </p>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="about-cta">
+        <h2 class="about-cta-title">Ready to find your perfect bag?</h2>
+        <p class="about-cta-sub">Explore our curated collection of luxury handbags.</p>
+        <a href="{% url 'products:product_list' %}" class="btn-primary"
+           style="width:auto; padding:16px 40px; font-size:0.95rem;">
+            Shop the Collection
+        </a>
+    </section>
+
+</div>
+{% endblock %}

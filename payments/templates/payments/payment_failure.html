@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Payment Failed | LIORA{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/checkout.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="success-shell">
+    <div class="success-card">
+
+        <!-- Red X mark -->
+        <div class="success-icon">
+            <svg width="80" height="80" viewBox="0 0 24 24"
+                 fill="none" stroke="currentColor" stroke-width="1.2">
+                <circle cx="12" cy="12" r="10"
+                        stroke="#B23A48" stroke-width="1.5"></circle>
+                <line x1="15" y1="9" x2="9" y2="15"
+                      stroke="#B23A48" stroke-width="2"></line>
+                <line x1="9" y1="9" x2="15" y2="15"
+                      stroke="#B23A48" stroke-width="2"></line>
+            </svg>
+        </div>
+
+        <p class="success-eyebrow" style="color:#B23A48;">Payment Failed</p>
+        <h1 class="success-title">Something Went Wrong</h1>
+        <p class="success-subtitle">
+            Your payment could not be completed.
+            Don't worry — your order is saved and you can retry the payment.
+        </p>
+
+        <div class="success-order-info">
+            <div class="success-info-row">
+                <span>Order ID</span>
+                <strong>{{ order.order_id }}</strong>
+            </div>
+            <div class="success-info-row">
+                <span>Amount</span>
+                <strong>₹{{ order.total }}</strong>
+            </div>
+            <div class="success-info-row">
+                <span>Payment Status</span>
+                <strong style="color:#B23A48;">Not Paid</strong>
+            </div>
+        </div>
+
+        <div class="success-actions">
+            <a href="{% url 'payments:initiate' order.order_id %}"
+               class="btn-primary success-btn">
+                Retry Payment
+            </a>
+            <a href="{% url 'orders:order_list' %}"
+               class="btn-secondary success-btn">
+                My Orders
+            </a>
+        </div>
+
+        <p class="success-note">
+            If money was deducted from your account but you see this page,
+            please contact support with your Order ID.
+        </p>
+
+    </div>
+</div>
+{% endblock %}

@@ -21,8 +21,11 @@
         <h1 class="panel-title">Add New Address</h1>
     </div>
 
-    <form method="post" action="{% url 'profile_app:add_address' %}" class="address-form" novalidate>
-        {% csrf_token %}
+    <form method="post"
+      action="{% url 'profile_app:add_address' %}{% if next %}?next={{ next }}{% endif %}"
+      class="address-form" novalidate>
+    {% csrf_token %}
+    <input type="hidden" name="next" value="{{ next }}">
 
         <div class="form-row">
             <div class="form-group">
@@ -80,10 +83,11 @@
             <span>Set as default address</span>
         </label>
 
-        <div class="panel-actions">
-            <button type="submit" class="btn-primary panel-btn">Save Address</button>
-            <a href="{% url 'profile_app:address_list' %}" class="btn-secondary panel-btn">Cancel</a>
-        </div>
+    <div class="panel-actions">
+    <button type="submit" class="btn-primary panel-btn">Save Address</button>
+    <a href="{% if next %}{{ next }}{% else %}{% url 'profile_app:address_list' %}{% endif %}"
+       class="btn-secondary panel-btn">Cancel</a>
+</div>
     </form>
 </div>
 {% endblock %}

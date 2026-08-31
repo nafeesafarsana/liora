@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Payment | LIORA{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/checkout.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="success-shell">
+    <div class="success-card">
+        <p class="success-eyebrow">Secure Payment</p>
+        <h1 class="success-title">Complete Your Order</h1>
+        <p class="success-subtitle">
+            Supports UPI, Cards, Net Banking, and Wallets.
+        </p>
+
+        <div class="success-order-info">
+            <div class="success-info-row">
+                <span>Order ID</span>
+                <strong>{{ order.order_id }}</strong>
+            </div>
+            <div class="success-info-row">
+                <span>Amount</span>
+                <strong style="color:var(--burgundy);">₹{{ amount_inr }}</strong>
+            </div>
+        </div>
+
+        <button id="rzp-button" class="btn-primary"
+                style="width:100%; padding:16px; font-size:1rem;">
+            Pay ₹{{ amount_inr }} Securely
+        </button>
+
+        <a href="{% url 'payments:failure' order.order_id %}"
+           class="checkout-back-link"
+           style="display:block; margin-top:14px;">
+            Cancel Payment
+        </a>
+    </div>
+</div>
+
+<!-- Hidden form for card/UPI payments -->
+<form id="paymentForm" method="POST"
+      action="{% url 'payments:success' %}"
+      style="display:none;">
+    {% csrf_token %}
+    <input type="hidden" name="razorpay_payment_id" id="f_payment_id">
+    <input type="hidden" name="razorpay_order_id" id="f_order_id">
+    <input type="hidden" name="razorpay_signature" id="f_signature">
+</form>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+    var paymentDone = false;
+
+    var options = {
+        key: "{{ razorpay_key_id }}",
+        amount: "{{ amount_paise }}",
+        currency: "INR",
+        name: "LIORA",
+        description: "Order {{ order.order_id }}",
+        order_id: "{{ razorpay_order_id }}",
+
+        // ← THIS IS THE KEY FIX FOR NET BANKING
+        // Razorpay will POST payment data to this URL
+        // after bank redirect — works for ALL payment methods
+        callback_url: "{{ callback_url }}",
+        redirect: true,
+
+        // This handler fires for card/UPI (instant payments)
+        // Net Banking uses callback_url instead
+        handler: function(response) {
+            paymentDone = true;
+            document.getElementById('f_payment_id').value = response.razorpay_payment_id;
+            document.getElementById('f_order_id').value = response.razorpay_order_id;
+            document.getElementById('f_signature').value = response.razorpay_signature;
+            document.getElementById('paymentForm').submit();
+        },
+
+        prefill: {
+            name: "{{ user_name }}",
+            email: "{{ user_email }}"
+        },
+
+        theme: {
+            color: "#6D214F"
+        },
+
+        modal: {
+            ondismiss: function() {
+                if (!paymentDone) {
+                    window.location.href = "{% url 'payments:failure' order.order_id %}";
+                }
+            },
+            escape: false,
+            backdropclose: false
+        }
+    };
+
+    var rzp = new Razorpay(options);
+
+    document.getElementById('rzp-button').onclick = function(e) {
+        rzp.open();
+        e.preventDefault();
+    };
+
+    window.onload = function() {
+        rzp.open();
+    };
+</script>
+{% endblock %}

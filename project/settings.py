@@ -33,6 +33,14 @@ INSTALLED_APPS = [
     'profile_app',
     'home',
     'admin_panel',
+    'products',
+    'cart',
+    'orders',
+    'payments',
+    'coupons',
+    'offers',
+    'wallet',
+    'reports',
     
 
     # django-allauth (Google Authentication)
@@ -68,6 +76,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'profile_app.context_processors.google_user', 
             ],
         },
     },
@@ -78,11 +87,11 @@ WSGI_APPLICATION = 'project.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'liora',
-        'USER': 'postgres',
-        'PASSWORD': '1234',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'NAME': config('DB_NAME'),
+        'USER': config('DB_USER'),
+        'PASSWORD': config('DB_PASSWORD'),
+        'HOST': config('DB_HOST'),
+        'PORT': config('DB_PORT'),
     }
 }
 
@@ -138,11 +147,9 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 # ----------------------------------------------------------------------
 # DJANGO-ALLAUTH CONFIG (Google Authentication Login)
 # ----------------------------------------------------------------------
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_USERNAME_REQUIRED = False
-ACCOUNT_AUTHENTICATION_METHOD = 'email'
-ACCOUNT_EMAIL_VERIFICATION = 'none'  # We handle our own OTP verification
-ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+ACCOUNT_LOGIN_METHODS = {'email'}
+ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
+ACCOUNT_EMAIL_VERIFICATION = 'none'
 ACCOUNT_LOGOUT_ON_GET = True
 SOCIALACCOUNT_AUTO_SIGNUP = True
 SOCIALACCOUNT_LOGIN_ON_GET = True
@@ -176,3 +183,6 @@ DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='LIORA <noreply@liora.
 # OTP settings
 OTP_EXPIRY_MINUTES = 5
 OTP_RESEND_COOLDOWN_SECONDS = 30
+# Razorpay
+RAZORPAY_KEY_ID = config('RAZORPAY_KEY_ID')
+RAZORPAY_KEY_SECRET = config('RAZORPAY_KEY_SECRET') 

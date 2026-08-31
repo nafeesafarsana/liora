@@ -81,10 +81,11 @@
             <span>Set as default address</span>
         </label>
 
-        <div class="panel-actions">
-            <button type="submit" class="btn-primary panel-btn">Update Address</button>
-            <a href="{% url 'profile_app:address_list' %}" class="btn-secondary panel-btn">Cancel</a>
-        </div>
+      <div class="panel-actions">
+    <button type="submit" class="btn-primary panel-btn">Update Address</button>
+    <a href="{% if next %}{{ next }}{% else %}{% url 'profile_app:address_list' %}{% endif %}"
+       class="btn-secondary panel-btn">Cancel</a>
+</div>
     </form>
 </div>
 {% endblock %}

@@ -1,0 +1,179 @@
+{% extends 'admin_panel/admin_base.html' %}
+{% load static %}
+
+{% block title %}Order {{ order.order_id }} | LIORA Admin{% endblock %}
+
+{% block content %}
+{% include 'admin_panel/includes/admin_navbar.html' %}
+
+<div class="admin-shell">
+    <div class="admin-page-header">
+        <div>
+            <p class="admin-eyebrow">Orders</p>
+            <h1 class="admin-page-title">{{ order.order_id }}</h1>
+            <p style="color:#6b6b6b; font-size:0.88rem; margin-top:4px;">
+                Placed on {{ order.created_at|date:"d M Y, H:i" }}
+            </p>
+        </div>
+        <a href="{% url 'admin_panel:admin_order_list' %}" class="admin-btn-outline">
+            &larr; Back to Orders
+        </a>
+    </div>
+
+    <div class="row g-4">
+
+        <!-- Left: Items + Address -->
+        <div class="col-lg-8">
+
+            <!-- Order Items -->
+            <div class="admin-panel-card">
+                <h3 class="admin-panel-card-title" style="margin-bottom:20px;">Order Items</h3>
+                <div class="table-responsive">
+                    <table class="table admin-table">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Price</th>
+                                <th>Qty</th>
+                                <th>Subtotal</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in items %}
+                            <tr>
+                                <td>
+                                    <div style="display:flex; align-items:center; gap:12px;">
+                                        {% if item.product_image %}
+                                        <img src="/media/{{ item.product_image }}"
+                                             style="width:48px; height:48px; object-fit:cover; border-radius:6px; border:1px solid #E8DCCB;">
+                                        {% endif %}
+                                        <span>{{ item.product_name }}</span>
+                                    </div>
+                                </td>
+                                <td>₹{{ item.price }}</td>
+                                <td>{{ item.quantity }}</td>
+                                <td><strong>₹{{ item.subtotal }}</strong></td>
+                                <td>
+                                    <span class="order-status-badge status-{{ item.status }}">
+                                        {{ item.get_status_display }}
+                                    </span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Delivery Address -->
+            <div class="admin-panel-card" style="margin-top:20px;">
+                <h3 class="admin-panel-card-title" style="margin-bottom:16px;">Delivery Address</h3>
+                <p><strong>{{ order.full_name }}</strong></p>
+                <p style="color:#6b6b6b;">{{ order.phone }}</p>
+                <p>{{ order.house_name }}, {{ order.area }}</p>
+                <p>{{ order.city }}, {{ order.state }} — {{ order.pincode }}</p>
+                {% if order.landmark %}
+                <p>Landmark: {{ order.landmark }}</p>
+                {% endif %}
+            </div>
+
+        </div>
+
+        <!-- Right: Summary + Status Change + Customer -->
+        <div class="col-lg-4">
+
+            <!-- Price Summary -->
+            <div class="admin-panel-card">
+                <h3 class="admin-panel-card-title" style="margin-bottom:16px;">Price Summary</h3>
+                <div class="admin-summary-row">
+                    <span>Subtotal</span>
+                    <span>₹{{ order.subtotal }}</span>
+                </div>
+                {% if order.tax > 0 %}
+                <div class="admin-summary-row">
+                    <span>Tax</span>
+                    <span>₹{{ order.tax }}</span>
+                </div>
+                {% endif %}
+                <div class="admin-summary-row">
+                    <span>Shipping</span>
+                    <span>
+                        {% if order.shipping_charge == 0 %}FREE
+                        {% else %}₹{{ order.shipping_charge }}{% endif %}
+                    </span>
+                </div>
+                <div class="admin-summary-row admin-summary-total">
+                    <span>Total</span>
+                    <span>₹{{ order.total }}</span>
+                </div>
+                <div class="admin-summary-row" style="margin-top:12px;">
+                    <span>Payment</span>
+                    <span>{{ order.payment_method|upper }}</span>
+                </div>
+            </div>
+
+            <!-- Change Order Status -->
+            <div class="admin-panel-card" style="margin-top:20px;">
+                <h3 class="admin-panel-card-title" style="margin-bottom:16px;">Order Status</h3>
+
+                <div style="margin-bottom:16px;">
+                    <span class="order-status-badge status-{{ order.status }}"
+                          style="font-size:0.9rem; padding:8px 18px;">
+                        Current: {{ order.get_status_display }}
+                    </span>
+                </div>
+
+                <form method="post"
+                      action="{% url 'admin_panel:admin_order_detail' order.order_id %}">
+                    {% csrf_token %}
+                    <div class="admin-form-group">
+                        <label class="admin-form-label">Change Status To</label>
+                        <select name="status" class="admin-form-input">
+                            {% for value, label in status_choices %}
+                            <option value="{{ value }}"
+                                    {% if order.status == value %}selected{% endif %}>
+                                {{ label }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="admin-btn-gold" style="width:100%;">
+                        Update Status
+                    </button>
+                </form>
+
+                {% if order.cancellation_reason %}
+                <div style="margin-top:16px; padding:12px; background:#FBEAEC; border-radius:6px;">
+                    <p style="font-size:0.82rem; color:#8A2A36; font-weight:600; margin-bottom:4px;">
+                        Cancellation Reason
+                    </p>
+                    <p style="font-size:0.85rem; color:#5a5a5a;">{{ order.cancellation_reason }}</p>
+                </div>
+                {% endif %}
+
+                {% if order.return_reason %}
+                <div style="margin-top:16px; padding:12px; background:#FBF3E3; border-radius:6px;">
+                    <p style="font-size:0.82rem; color:#8A6A1F; font-weight:600; margin-bottom:4px;">
+                        Return Reason
+                    </p>
+                    <p style="font-size:0.85rem; color:#5a5a5a;">{{ order.return_reason }}</p>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Customer Info -->
+            <div class="admin-panel-card" style="margin-top:20px;">
+                <h3 class="admin-panel-card-title" style="margin-bottom:16px;">Customer</h3>
+                {% if order.user %}
+                <p><strong>{{ order.user.first_name }} {{ order.user.last_name }}</strong></p>
+                <p style="color:#6b6b6b; font-size:0.88rem;">{{ order.user.email }}</p>
+                {% else %}
+                <p style="color:#9b9b9b;">Deleted account</p>
+                {% endif %}
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

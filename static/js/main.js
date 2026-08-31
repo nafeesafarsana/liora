@@ -40,3 +40,25 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 });
+// Avatar dropdown toggle
+document.addEventListener('DOMContentLoaded', function () {
+    var avatarBtn = document.getElementById('avatarBtn');
+    var avatarDropdown = document.getElementById('avatarDropdown');
+
+    if (avatarBtn && avatarDropdown) {
+        avatarBtn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            avatarDropdown.classList.toggle('open');
+        });
+
+        // Close when clicking anywhere else
+        document.addEventListener('click', function () {
+            avatarDropdown.classList.remove('open');
+        });
+
+        // Prevent dropdown clicks from closing it
+        avatarDropdown.addEventListener('click', function (e) {
+            e.stopPropagation();
+        });
+    }
+});

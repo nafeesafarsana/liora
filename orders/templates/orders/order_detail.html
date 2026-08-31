@@ -1,0 +1,204 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Order {{ order.order_id }} | LIORA{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/orders.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="orders-shell">
+
+    <div class="orders-header">
+        <div>
+            <p class="shop-eyebrow">My Orders</p>
+            <h1 class="shop-title">{{ order.order_id }}</h1>
+            <p style="color:#6b6b6b; font-size:0.88rem;">Placed on {{ order.created_at|date:"d M Y, H:i" }}</p>
+        </div>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <a href="{% url 'orders:order_list' %}" class="btn-secondary" style="width:auto; padding:12px 20px;">
+                &larr; My Orders
+            </a>
+            {% if order.status == 'delivered' or order.status == 'cancelled' %}
+            <a href="{% url 'orders:download_invoice' order.order_id %}"
+               class="btn-primary" style="width:auto; padding:12px 20px;">
+                Download Invoice
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Status Banner -->
+    <div class="order-status-banner status-banner-{{ order.status }}">
+        <div class="status-banner-icon">
+            {% if order.status == 'delivered' %}✓
+            {% elif order.status == 'cancelled' %}✕
+            {% elif order.status == 'shipped' %}🚚
+            {% elif order.status == 'out_for_delivery' %}📦
+            {% elif order.status == 'returned' %}↩
+            {% else %}⏳
+            {% endif %}
+        </div>
+        <div>
+            <p class="status-banner-title">{{ order.get_status_display }}</p>
+            <p class="status-banner-sub">
+                {% if order.status == 'pending' %}Your order has been placed and is being processed.
+                {% elif order.status == 'shipped' %}Your order is on its way!
+                {% elif order.status == 'out_for_delivery' %}Your order will arrive today.
+                {% elif order.status == 'delivered' %}Your order was delivered successfully.
+                {% elif order.status == 'cancelled' %}This order was cancelled.
+                {% elif order.status == 'returned' %}Return request submitted.
+                {% endif %}
+            </p>
+        </div>
+    </div>
+
+    <div class="order-detail-grid">
+
+        <!-- Left -->
+        <div class="order-detail-left">
+
+            <!-- Items -->
+            <div class="order-detail-card">
+                <h2 class="order-detail-card-title">Order Items</h2>
+                {% for item in items %}
+                <div class="order-detail-item">
+                    <div class="order-detail-item-img">
+                        {% if item.product_image %}
+                        <img src="/media/{{ item.product_image }}" alt="{{ item.product_name }}">
+                        {% else %}
+                        <div class="order-detail-placeholder">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+                                <path d="M6 7h12l1 13H5L6 7z"></path>
+                            </svg>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="order-detail-item-info">
+                        <h3 class="order-detail-item-name">{{ item.product_name }}</h3>
+                        <p class="order-detail-item-price">₹{{ item.price }} × {{ item.quantity }}</p>
+                        <span class="order-item-status-pill status-{{ item.status }}">
+                            {{ item.get_status_display }}
+                        </span>
+                        {% if item.cancellation_reason %}
+                        <p class="order-cancel-reason">Reason: {{ item.cancellation_reason }}</p>
+                        {% endif %}
+                    </div>
+                    <p class="order-detail-item-subtotal">₹{{ item.subtotal }}</p>
+
+                    {% if item.status == 'pending' and order.status == 'pending' %}
+                    <form method="post" action="{% url 'orders:cancel_order_item' item.pk %}">
+                        {% csrf_token %}
+                        <input type="text" name="reason" placeholder="Reason (optional)"
+                               class="cancel-reason-input">
+                        <button type="submit" class="cancel-item-btn"
+                                onclick="return confirm('Cancel this item?')">
+                            Cancel Item
+                        </button>
+                    </form>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Delivery Address -->
+            <div class="order-detail-card">
+                <h2 class="order-detail-card-title">Delivery Address</h2>
+                <p><strong>{{ order.full_name }}</strong> | {{ order.phone }}</p>
+                <p>{{ order.house_name }}, {{ order.area }}</p>
+                <p>{{ order.city }}, {{ order.state }} — {{ order.pincode }}</p>
+                {% if order.landmark %}<p>Landmark: {{ order.landmark }}</p>{% endif %}
+            </div>
+
+        </div>
+
+        <!-- Right -->
+        <div class="order-detail-right">
+
+            <!-- Price Summary -->
+            <div class="order-detail-card">
+                <h2 class="order-detail-card-title">Price Summary</h2>
+                <div class="order-summary-row">
+                    <span>Subtotal</span>
+                    <span>₹{{ order.subtotal }}</span>
+                </div>
+                {% if order.tax > 0 %}
+                <div class="order-summary-row">
+                    <span>Tax</span>
+                    <span>₹{{ order.tax }}</span>
+                </div>
+                {% endif %}
+                <div class="order-summary-row">
+                    <span>Shipping</span>
+                    <span>{% if order.shipping_charge == 0 %}FREE{% else %}₹{{ order.shipping_charge }}{% endif %}</span>
+                </div>
+                <div class="order-summary-total">
+                    <span>Total</span>
+                    <span>₹{{ order.total }}</span>
+                </div>
+                <div class="order-summary-row" style="margin-top:10px;">
+                    <span>Payment</span>
+                    <span>{{ order.payment_method|upper }}</span>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            {% if order.status in 'pending shipped' %}
+            <div class="order-detail-card">
+                <h2 class="order-detail-card-title">Cancel Order</h2>
+                <p style="font-size:0.85rem; color:#6b6b6b; margin-bottom:12px;">
+                    Cancel reason is optional.
+                </p>
+                <form method="post" action="{% url 'orders:cancel_order' order.order_id %}">
+                    {% csrf_token %}
+                    <textarea name="reason"
+                              placeholder="Reason for cancellation (optional)"
+                              class="cancel-textarea"></textarea>
+                    <button type="submit" class="btn-danger"
+                            onclick="return confirm('Are you sure you want to cancel this order?')">
+                        Cancel Entire Order
+                    </button>
+                </form>
+            </div>
+            {% endif %}
+
+            {% if order.status == 'delivered' %}
+            <div class="order-detail-card">
+                <h2 class="order-detail-card-title">Return Order</h2>
+                <p style="font-size:0.85rem; color:#6b6b6b; margin-bottom:12px;">
+                    Return reason is mandatory.
+                </p>
+                <form method="post" action="{% url 'orders:return_order' order.order_id %}">
+                    {% csrf_token %}
+                    <textarea name="reason"
+                              placeholder="Reason for return (required)"
+                              class="cancel-textarea"
+                              required></textarea>
+                    <button type="submit" class="btn-secondary"
+                            style="width:100%; padding:13px;"
+                            onclick="return confirm('Submit return request?')">
+                        Request Return
+                    </button>
+                </form>
+            </div>
+            {% endif %}
+
+            {% if order.cancellation_reason %}
+            <div class="order-detail-card" style="border-left:3px solid #B23A48;">
+                <p style="font-size:0.82rem; color:#8A2A36; font-weight:600;">Cancellation Reason</p>
+                <p style="font-size:0.88rem; color:#5a5a5a;">{{ order.cancellation_reason }}</p>
+            </div>
+            {% endif %}
+
+            {% if order.return_reason %}
+            <div class="order-detail-card" style="border-left:3px solid var(--gold);">
+                <p style="font-size:0.82rem; color:#8A6A1F; font-weight:600;">Return Reason</p>
+                <p style="font-size:0.88rem; color:#5a5a5a;">{{ order.return_reason }}</p>
+            </div>
+            {% endif %}
+
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Wishlist | LIORA{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/cart.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="cart-shell">
+    <div class="cart-header">
+        <p class="shop-eyebrow">Saved</p>
+        <h1 class="shop-title">My Wishlist</h1>
+    </div>
+
+    {% if wishlist_items %}
+    <div class="wishlist-grid">
+        {% for item in wishlist_items %}
+        <div class="wishlist-card">
+            <a href="{% url 'products:product_detail' item.product.pk %}" class="wishlist-card-image">
+                {% if item.product.primary_image %}
+                <img src="{{ item.product.primary_image.image.url }}" alt="{{ item.product.name }}">
+                {% else %}
+                <div class="product-card-placeholder">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+                        <path d="M6 7h12l1 13H5L6 7z"></path>
+                        <path d="M9 7V5a3 3 0 0 1 6 0v2"></path>
+                    </svg>
+                </div>
+                {% endif %}
+            </a>
+            <div class="wishlist-card-info">
+                <p class="product-card-category">{{ item.product.category.name }}</p>
+                <h3 class="product-card-name">{{ item.product.name }}</h3>
+                <p class="price-current">₹{{ item.product.effective_price }}</p>
+
+                <div class="wishlist-card-actions">
+                    {% if item.product.is_in_stock %}
+                    <form method="post" action="{% url 'cart:add_to_cart' item.product.pk %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="quantity" value="1">
+                        <button type="submit" class="btn-primary wishlist-add-btn">Add to Cart</button>
+                    </form>
+                    {% else %}
+                    <span class="stock-badge stock-out">Out of Stock</span>
+                    {% endif %}
+
+                    <form method="post" action="{% url 'cart:wishlist_remove' item.product.pk %}">
+                        {% csrf_token %}
+                        <button type="submit" class="wishlist-remove-btn" title="Remove from wishlist">
+                            &times;
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% else %}
+    <div class="cart-empty">
+        <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+        </svg>
+        <h3>Your wishlist is empty</h3>
+        <p>Save items you love for later.</p>
+        <a href="{% url 'products:product_list' %}" class="btn-primary" style="width:auto; padding:14px 32px;">
+            Discover Products
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

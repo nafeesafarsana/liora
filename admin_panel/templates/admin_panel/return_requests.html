@@ -1,0 +1,76 @@
+{% extends 'admin_panel/admin_base.html' %}
+{% load static %}
+
+{% block title %}Return Requests | LIORA Admin{% endblock %}
+
+{% block content %}
+{% include 'admin_panel/includes/admin_navbar.html' %}
+
+<div class="admin-shell">
+    <div class="admin-page-header">
+        <div>
+            <p class="admin-eyebrow">Orders</p>
+            <h1 class="admin-page-title">Return Requests</h1>
+        </div>
+    </div>
+
+    <div class="admin-panel-card">
+        <div class="table-responsive">
+            <table class="table admin-table">
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Customer</th>
+                        <th>Total</th>
+                        <th>Return Reason</th>
+                        <th>Returned At</th>
+                        <th>Payment Status</th>
+                        <th class="text-end">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in return_orders %}
+                    <tr>
+                        <td><strong>{{ order.order_id }}</strong></td>
+                        <td>
+                            {% if order.user %}
+                            {{ order.user.first_name }} {{ order.user.last_name }}<br>
+                            <small style="color:#6b6b6b;">{{ order.user.email }}</small>
+                            {% else %}—{% endif %}
+                        </td>
+                        <td>₹{{ order.total }}</td>
+                        <td style="max-width:200px;">{{ order.return_reason|truncatechars:60 }}</td>
+                        <td>{{ order.returned_at|date:"d M Y, H:i"|default:"—" }}</td>
+                        <td>
+                            <span class="admin-badge {% if order.payment_status == 'refunded' %}admin-badge-active{% else %}admin-badge-blocked{% endif %}">
+                                {{ order.payment_status|capfirst }}
+                            </span>
+                        </td>
+                        <td class="text-end">
+                            {% if order.payment_status != 'refunded' %}
+                            <form method="post"
+                                  action="{% url 'admin_panel:confirm_refund' order.order_id %}"
+                                  onsubmit="return confirm('Confirm refund of ₹{{ order.total }} to {{ order.user.email }}?')">
+                                {% csrf_token %}
+                                <button type="submit" class="admin-action-btn admin-action-unblock">
+                                    Confirm Refund
+                                </button>
+                            </form>
+                            {% else %}
+                            <span class="admin-badge admin-badge-active">Refunded</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center admin-empty-row">
+                            No return requests.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

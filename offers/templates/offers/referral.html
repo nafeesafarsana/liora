@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Referral | LIORA{% endblock %}
+
+{% block content %}
+<div class="orders-shell">
+    <div class="orders-header">
+        <div>
+            <p class="shop-eyebrow">Account</p>
+            <h1 class="shop-title">My Referral Code</h1>
+        </div>
+    </div>
+
+    <div class="order-detail-card" style="max-width:600px;">
+        <h2 class="order-detail-card-title">Share & Earn</h2>
+        <p style="color:#6b6b6b; font-size:0.9rem; margin-bottom:var(--space-md);">
+            Share your referral code. When a friend signs up and uses it,
+            both of you get ₹{{ referral.reward_amount }} in your wallets!
+        </p>
+
+        <div style="background:var(--beige-soft); padding:20px; border-radius:var(--radius-md);
+                    text-align:center; margin-bottom:var(--space-md);">
+            <p style="font-size:0.75rem; letter-spacing:0.1em; text-transform:uppercase;
+                      color:#6b6b6b; margin-bottom:8px;">Your Referral Code</p>
+            <p style="font-family:var(--font-display); font-size:2rem; color:var(--burgundy);
+                      font-weight:700; letter-spacing:0.1em;">{{ referral.code }}</p>
+            <p style="font-size:0.82rem; color:#6b6b6b; margin-top:4px;">
+                Used {{ referral.times_used }} time{{ referral.times_used|pluralize }}
+            </p>
+        </div>
+
+        <div style="margin-bottom:var(--space-md);">
+            <p style="font-size:0.82rem; color:#6b6b6b; margin-bottom:8px;">Share this link:</p>
+            <div style="display:flex; gap:10px;">
+                <input type="text" value="{{ referral_url }}" readonly
+                       class="filter-search-input"
+                       style="flex:1; border:1px solid var(--beige); border-radius:var(--radius-sm);
+                              padding:10px 14px; font-size:0.82rem; background:var(--beige-soft);"
+                       id="referralUrl">
+                <button onclick="copyReferral()" class="btn-primary"
+                        style="width:auto; padding:10px 20px; font-size:0.85rem;">
+                    Copy
+                </button>
+            </div>
+        </div>
+
+        {% if usages %}
+        <h3 style="font-size:1rem; margin-bottom:12px; color:var(--burgundy-dark);">
+            Friends Who Joined ({{ usages.count }})
+        </h3>
+        {% for usage in usages %}
+        <div style="display:flex; align-items:center; justify-content:space-between;
+                    padding:10px 0; border-bottom:1px solid var(--beige-soft);">
+            <span style="font-size:0.88rem;">{{ usage.referred_user.email }}</span>
+            <span class="order-status-pill status-delivered" style="font-size:0.75rem;">
+                +₹{{ referral.reward_amount }} earned
+            </span>
+        </div>
+        {% endfor %}
+        {% endif %}
+    </div>
+
+    <!-- Apply referral form for new users -->
+    {% if not request.user.referral_usage %}
+    <div class="order-detail-card" style="max-width:600px; margin-top:var(--space-md);">
+        <h2 class="order-detail-card-title">Have a Referral Code?</h2>
+        <form method="post" action="{% url 'offers:apply_referral' %}"
+              style="display:flex; gap:10px; margin-top:var(--space-sm);">
+            {% csrf_token %}
+            <input type="text" name="referral_code" placeholder="Enter referral code"
+                   class="filter-search-input"
+                   style="flex:1; border:1px solid var(--beige); border-radius:var(--radius-sm);
+                          padding:11px 14px; font-family:var(--font-body);">
+            <button type="submit" class="btn-primary" style="width:auto; padding:11px 22px;">
+                Apply
+            </button>
+        </form>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+function copyReferral() {
+    var input = document.getElementById('referralUrl');
+    input.select();
+    document.execCommand('copy');
+    alert('Referral link copied!');
+}
+</script>
+{% endblock %}

@@ -1,0 +1,138 @@
+{% extends 'admin_panel/admin_base.html' %}
+{% load static %}
+
+{% block title %}Sales Report | LIORA Admin{% endblock %}
+
+{% block content %}
+{% include 'admin_panel/includes/admin_navbar.html' %}
+
+<div class="admin-shell">
+    <div class="admin-page-header">
+        <div>
+            <p class="admin-eyebrow">Analytics</p>
+            <h1 class="admin-page-title">Sales Report</h1>
+        </div>
+        <div style="display:flex; gap:10px;">
+            <a href="{% url 'reports:sales_pdf' %}?filter={{ filter_type }}&start_date={{ start_str }}&end_date={{ end_str }}"
+               class="admin-btn-gold">Download PDF</a>
+            <a href="{% url 'reports:sales_excel' %}?filter={{ filter_type }}&start_date={{ start_str }}&end_date={{ end_str }}"
+               class="admin-btn-outline">Download Excel</a>
+        </div>
+    </div>
+
+    <!-- Filter -->
+    <div class="admin-panel-card" style="margin-bottom:24px;">
+        <form method="get" action="{% url 'reports:sales_report' %}" class="admin-search-form">
+            <select name="filter" class="admin-filter-select" onchange="toggleCustom(this.value)">
+                <option value="daily" {% if filter_type == 'daily' %}selected{% endif %}>Today</option>
+                <option value="weekly" {% if filter_type == 'weekly' %}selected{% endif %}>This Week</option>
+                <option value="monthly" {% if filter_type == 'monthly' %}selected{% endif %}>This Month</option>
+                <option value="yearly" {% if filter_type == 'yearly' %}selected{% endif %}>This Year</option>
+                <option value="custom" {% if filter_type == 'custom' %}selected{% endif %}>Custom Range</option>
+            </select>
+
+            <div id="customDateRange"
+                 style="display:{% if filter_type == 'custom' %}flex{% else %}none{% endif %}; gap:10px; align-items:center;">
+                <input type="date" name="start_date" value="{{ start_str }}"
+                       class="admin-stock-input" style="width:140px;">
+                <span>to</span>
+                <input type="date" name="end_date" value="{{ end_str }}"
+                       class="admin-stock-input" style="width:140px;">
+            </div>
+
+            <button type="submit" class="admin-btn-gold">Apply</button>
+        </form>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="admin-stat-card">
+                <p class="admin-stat-label">Total Orders</p>
+                <p class="admin-stat-value">{{ total_orders }}</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="admin-stat-card">
+                <p class="admin-stat-label">Total Sales</p>
+                <p class="admin-stat-value">₹{{ total_sales }}</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="admin-stat-card">
+                <p class="admin-stat-label">Offer Discounts</p>
+                <p class="admin-stat-value" style="color:#8A6A1F;">₹{{ total_offer_discount }}</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="admin-stat-card">
+                <p class="admin-stat-label">Coupon Discounts</p>
+                <p class="admin-stat-value" style="color:#8A6A1F;">₹{{ total_coupon_discount }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Orders Table -->
+    <div class="admin-panel-card">
+        <h3 class="admin-panel-card-title" style="margin-bottom:16px;">
+            Orders — {{ start_date|date:"d M Y" }} to {{ end_date|date:"d M Y" }}
+        </h3>
+
+        <div class="table-responsive">
+            <table class="table admin-table">
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Date</th>
+                        <th>Customer</th>
+                        <th>Offer Disc.</th>
+                        <th>Coupon Disc.</th>
+                        <th>Shipping</th>
+                        <th>Total</th>
+                        <th>Payment</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                    <tr>
+                        <td><strong>{{ order.order_id }}</strong></td>
+                        <td>{{ order.created_at|date:"d M Y" }}</td>
+                        <td>{{ order.full_name }}</td>
+                        <td style="color:#8A6A1F;">
+                            {% if order.offer_discount > 0 %}-₹{{ order.offer_discount }}{% else %}—{% endif %}
+                        </td>
+                        <td style="color:#8A6A1F;">
+                            {% if order.coupon_discount > 0 %}-₹{{ order.coupon_discount }}{% else %}—{% endif %}
+                        </td>
+                        <td>
+                            {% if order.shipping_charge == 0 %}FREE{% else %}₹{{ order.shipping_charge }}{% endif %}
+                        </td>
+                        <td><strong>₹{{ order.total }}</strong></td>
+                        <td>{{ order.payment_method|upper }}</td>
+                        <td>
+                            <span class="order-status-badge status-{{ order.status }}">
+                                {{ order.get_status_display }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="9" class="text-center admin-empty-row">
+                            No orders for this period.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+function toggleCustom(value) {
+    document.getElementById('customDateRange').style.display =
+        value === 'custom' ? 'flex' : 'none';
+}
+</script>
+{% endblock %}

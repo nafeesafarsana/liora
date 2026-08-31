@@ -3,7 +3,7 @@ import re
 from django import forms
 from django.contrib.auth.models import User
 
-from .models import Address
+from .models import Address, Profile
 
 
 class EditProfileForm(forms.Form):
@@ -103,3 +103,10 @@ class AddressForm(forms.ModelForm):
         if not re.match(r'^[0-9]{6}$', pincode):
             raise forms.ValidationError("Enter a valid 6-digit pincode.")
         return pincode
+class ProfilePictureForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ['profile_picture']
+        widgets = {
+            'profile_picture': forms.FileInput(attrs={'class': 'profile-pic-input', 'accept': 'image/*'}),
+        }        

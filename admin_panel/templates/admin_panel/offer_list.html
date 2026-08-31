@@ -1,0 +1,78 @@
+{% extends 'admin_panel/admin_base.html' %}
+{% load static %}
+
+{% block title %}Offers | LIORA Admin{% endblock %}
+
+{% block content %}
+{% include 'admin_panel/includes/admin_navbar.html' %}
+
+<div class="admin-shell">
+    <div class="admin-page-header">
+        <div>
+            <p class="admin-eyebrow">Marketing</p>
+            <h1 class="admin-page-title">Offer Management</h1>
+        </div>
+        <a href="{% url 'admin_panel:offer_add' %}" class="admin-btn-gold">+ Add Offer</a>
+    </div>
+
+    <div class="admin-panel-card">
+        <div class="table-responsive">
+            <table class="table admin-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Type</th>
+                        <th>Target</th>
+                        <th>Discount</th>
+                        <th>Valid Until</th>
+                        <th>Status</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for offer in offers %}
+                    <tr>
+                        <td><strong>{{ offer.name }}</strong></td>
+                        <td>{{ offer.get_offer_type_display }}</td>
+                        <td>
+                            {% if offer.offer_type == 'product' and offer.product %}
+                                {{ offer.product.name }}
+                            {% elif offer.offer_type == 'category' and offer.category %}
+                                {{ offer.category.name }}
+                            {% elif offer.offer_type == 'referral' %}
+                                All Users
+                            {% else %}—{% endif %}
+                        </td>
+                        <td>{{ offer.discount_percentage }}%</td>
+                        <td>{{ offer.valid_until|date:"d M Y" }}</td>
+                        <td>
+                            <form method="post" action="{% url 'admin_panel:offer_toggle' offer.pk %}">
+                                {% csrf_token %}
+                                <button type="submit"
+                                        class="admin-badge {% if offer.is_active %}admin-badge-active{% else %}admin-badge-blocked{% endif %}">
+                                    {% if offer.is_active %}Active{% else %}Inactive{% endif %}
+                                </button>
+                            </form>
+                        </td>
+                        <td class="text-end">
+                            <form method="post"
+                                  action="{% url 'admin_panel:offer_delete' offer.pk %}"
+                                  onsubmit="return confirm('Delete offer {{ offer.name }}?')">
+                                {% csrf_token %}
+                                <button type="submit" class="admin-action-btn admin-action-block">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center admin-empty-row">
+                            No offers yet. <a href="{% url 'admin_panel:offer_add' %}">Add one</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

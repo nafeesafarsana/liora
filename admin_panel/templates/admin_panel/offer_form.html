@@ -1,0 +1,93 @@
+{% extends 'admin_panel/admin_base.html' %}
+{% load static %}
+
+{% block title %}{{ action }} Offer | LIORA Admin{% endblock %}
+
+{% block content %}
+{% include 'admin_panel/includes/admin_navbar.html' %}
+
+<div class="admin-shell">
+    <div class="admin-page-header">
+        <div>
+            <p class="admin-eyebrow">Marketing</p>
+            <h1 class="admin-page-title">{{ action }} Offer</h1>
+        </div>
+        <a href="{% url 'admin_panel:offer_list' %}" class="admin-btn-outline">&larr; Back</a>
+    </div>
+
+    <div class="admin-panel-card" style="max-width:600px;">
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="admin-form-group">
+                <label class="admin-form-label">Offer Name</label>
+                <input type="text" name="name" class="admin-form-input"
+                       placeholder="e.g. Summer Sale 20%" required>
+            </div>
+
+            <div class="admin-form-group">
+                <label class="admin-form-label">Offer Type</label>
+                <select name="offer_type" class="admin-form-input" id="offerType"
+                        onchange="toggleOfferTarget(this.value)">
+                    <option value="product">Product Offer</option>
+                    <option value="category">Category Offer</option>
+                    <option value="referral">Referral Offer</option>
+                </select>
+            </div>
+
+            <div class="admin-form-group" id="productField">
+                <label class="admin-form-label">Select Product</label>
+                <select name="product_id" class="admin-form-input">
+                    <option value="">— Select Product —</option>
+                    {% for product in products %}
+                    <option value="{{ product.pk }}">{{ product.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="admin-form-group" id="categoryField" style="display:none;">
+                <label class="admin-form-label">Select Category</label>
+                <select name="category_id" class="admin-form-input">
+                    <option value="">— Select Category —</option>
+                    {% for category in categories %}
+                    <option value="{{ category.pk }}">{{ category.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="admin-form-group">
+                <label class="admin-form-label">Discount Percentage (%)</label>
+                <input type="number" name="discount_percentage" class="admin-form-input"
+                       placeholder="e.g. 20" step="0.01" max="100" required>
+            </div>
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="admin-form-group">
+                        <label class="admin-form-label">Valid From</label>
+                        <input type="datetime-local" name="valid_from" class="admin-form-input" required>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="admin-form-group">
+                        <label class="admin-form-label">Valid Until</label>
+                        <input type="datetime-local" name="valid_until" class="admin-form-input" required>
+                    </div>
+                </div>
+            </div>
+
+            <div style="display:flex; gap:12px; margin-top:24px;">
+                <button type="submit" class="admin-btn-gold">Create Offer</button>
+                <a href="{% url 'admin_panel:offer_list' %}" class="admin-btn-outline">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function toggleOfferTarget(type) {
+    document.getElementById('productField').style.display = type === 'product' ? 'block' : 'none';
+    document.getElementById('categoryField').style.display = type === 'category' ? 'block' : 'none';
+}
+</script>
+{% endblock %}

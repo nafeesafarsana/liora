@@ -1,0 +1,151 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Cart | LIORA{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/cart.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="cart-shell">
+    <div class="cart-header">
+        <p class="shop-eyebrow">Shopping</p>
+        <h1 class="shop-title">My Cart</h1>
+    </div>
+
+    {% if invalid_items %}
+    <div class="cart-notice">
+        <p>⚠️ Some items in your cart are no longer available and have been excluded from your total.</p>
+    </div>
+    {% endif %}
+
+    {% if valid_items or invalid_items %}
+    <div class="cart-grid">
+
+        <!-- Cart Items -->
+        <div class="cart-items">
+            {% for item in valid_items %}
+            <div class="cart-item">
+                <div class="cart-item-image">
+                    {% if item.product.primary_image %}
+                    <img src="{{ item.product.primary_image.image.url }}" alt="{{ item.product.name }}">
+                    {% endif %}
+                </div>
+                <div class="cart-item-info">
+                    <p class="cart-item-category">{{ item.product.category.name }}</p>
+                    <h3 class="cart-item-name">
+                        <a href="{% url 'products:product_detail' item.product.pk %}">{{ item.product.name }}</a>
+                    </h3>
+                    <p class="cart-item-price">₹{{ item.product.effective_price }}</p>
+
+                    <!-- Quantity controls -->
+                    <div class="cart-item-qty">
+                        <form method="post" action="{% url 'cart:update_quantity' item.pk %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="decrement">
+                            <button type="submit" class="qty-btn">−</button>
+                        </form>
+
+                        <span class="qty-display">{{ item.quantity }}</span>
+
+                        <form method="post" action="{% url 'cart:update_quantity' item.pk %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="increment">
+                            <button type="submit" class="qty-btn">+</button>
+                        </form>
+                    </div>
+
+                    <p class="cart-item-subtotal">Subtotal: <strong>₹{{ item.subtotal }}</strong></p>
+                </div>
+                <form method="post" action="{% url 'cart:remove_from_cart' item.pk %}" class="cart-item-remove">
+                    {% csrf_token %}
+                    <button type="submit" class="remove-btn" onclick="return confirm('Remove this item?')">&times;</button>
+                </form>
+            </div>
+            {% endfor %}
+
+            {% if invalid_items %}
+            <div class="unavailable-section">
+                <p class="unavailable-title">Unavailable Items</p>
+                {% for item in invalid_items %}
+                <div class="cart-item cart-item-unavailable">
+                    <div class="cart-item-image">
+                        {% if item.product.primary_image %}
+                        <img src="{{ item.product.primary_image.image.url }}" alt="{{ item.product.name }}" style="opacity:0.4;">
+                        {% endif %}
+                    </div>
+                    <div class="cart-item-info">
+                        <h3 class="cart-item-name" style="color:#9b9b9b;">{{ item.product.name }}</h3>
+                        <span class="stock-badge stock-out">No longer available</span>
+                    </div>
+                    <form method="post" action="{% url 'cart:remove_from_cart' item.pk %}" class="cart-item-remove">
+                        {% csrf_token %}
+                        <button type="submit" class="remove-btn">&times;</button>
+                    </form>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Order Summary -->
+        <div class="cart-summary">
+            <h2 class="summary-title">Order Summary</h2>
+            <div class="summary-row">
+                <span>Items ({{ valid_items|length }})</span>
+                <span>₹{{ total_price }}</span>
+            </div>
+            <div class="summary-row">
+                <span>Delivery</span>
+                <span class="free-delivery">FREE</span>
+            </div>
+            <div class="summary-total">
+                <span>Total</span>
+                <span>₹{{ total_price }}</span>
+            </div>
+
+          {% if valid_items %}
+    {% if can_checkout %}
+    <a href="{% url 'orders:checkout' %}" class="btn-primary checkout-btn"
+   style="display:block; text-align:center;">
+    Proceed to Checkout
+</a>
+    {% else %}
+    <button class="btn-primary checkout-btn" disabled
+            style="opacity:0.5; cursor:not-allowed;"
+            title="Remove unavailable items to proceed">
+        Proceed to Checkout
+    </button>
+    <p style="font-size:0.78rem; color:#B23A48; margin-top:8px; text-align:center;">
+        Remove unavailable items to proceed.
+    </p>
+    {% endif %}
+{% else %}
+<button class="btn-primary checkout-btn" disabled style="opacity:0.5; cursor:not-allowed;">
+    Proceed to Checkout
+</button>
+{% endif %}
+
+            <a href="{% url 'products:product_list' %}" class="continue-shopping">
+                &larr; Continue Shopping
+            </a>
+        </div>
+    </div>
+
+    {% else %}
+    <div class="cart-empty">
+        <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+            <circle cx="9" cy="21" r="1"></circle>
+            <circle cx="20" cy="21" r="1"></circle>
+            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+        </svg>
+        <h3>Your cart is empty</h3>
+        <p>Discover our luxury handbag collection.</p>
+        <a href="{% url 'products:product_list' %}" class="btn-primary" style="width:auto; padding:14px 32px;">
+            Shop Now
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

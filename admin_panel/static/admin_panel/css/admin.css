@@ -727,3 +727,161 @@
         width: 100%;
     }
 }
+/* Category / Product action group */
+.admin-action-group {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+}
+
+.admin-page-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+    gap: var(--space-md);
+}
+
+.admin-form-check-label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.admin-form-checkbox {
+    width: 17px;
+    height: 17px;
+    accent-color: var(--admin-burgundy);
+    cursor: pointer;
+}
+/* Product thumbnail in table */
+.product-thumb {
+    width: 52px;
+    height: 52px;
+    border-radius: var(--admin-radius-sm);
+    object-fit: cover;
+    border: 1px solid var(--admin-beige);
+}
+
+.product-thumb-placeholder {
+    width: 52px;
+    height: 52px;
+    border-radius: var(--admin-radius-sm);
+    background-color: var(--admin-beige-soft);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.65rem;
+    color: #9b9b9b;
+    text-align: center;
+}
+/* Color formset rows */
+.color-form-row {
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--admin-beige-soft);
+}
+
+.color-form-fields {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.admin-color-picker {
+    width: 50px;
+    height: 42px;
+    padding: 2px;
+    border: 1px solid var(--admin-beige);
+    border-radius: var(--admin-radius-sm);
+    cursor: pointer;
+    background: none;
+}
+/* ==========================================================================
+   Order Status Badges
+   ========================================================================== */
+.order-status-badge {
+    display: inline-block;
+    padding: 5px 14px;
+    border-radius: 999px;
+    font-size: 0.76rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+}
+
+.status-pending { background-color: rgba(200,169,107,0.18); color: #8A6A1F; }
+.status-shipped { background-color: rgba(59,130,246,0.12); color: #1D4ED8; }
+.status-out_for_delivery { background-color: rgba(139,92,246,0.12); color: #6D28D9; }
+.status-delivered { background-color: rgba(76,140,90,0.12); color: #4C8C5A; }
+.status-cancelled { background-color: rgba(178,58,72,0.12); color: #B23A48; }
+.status-returned { background-color: rgba(107,107,107,0.12); color: #4b4b4b; }
+
+/* Admin price summary */
+.admin-summary-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    color: #6b6b6b;
+    margin-bottom: 10px;
+}
+
+.admin-summary-total {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--admin-burgundy-dark);
+    padding-top: 10px;
+    border-top: 1px solid var(--admin-beige-soft);
+    margin-top: 4px;
+}
+
+/* Inventory stock input */
+.admin-stock-input {
+    width: 80px;
+    padding: 8px 10px;
+    border: 1px solid var(--admin-beige);
+    border-radius: var(--admin-radius-sm);
+    font-family: var(--admin-font-body);
+    font-size: 0.88rem;
+    text-align: center;
+}
+
+.admin-stock-input:focus {
+    outline: none;
+    border-color: var(--admin-burgundy);
+}
+
+/* Filter select */
+.admin-filter-select {
+    padding: 11px 14px;
+    border: 1px solid var(--admin-beige);
+    border-radius: var(--admin-radius-sm);
+    background-color: var(--admin-cream);
+    font-family: var(--admin-font-body);
+    font-size: 0.88rem;
+    color: var(--admin-text);
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236D214F' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 14px;
+    padding-right: 32px;
+}
+.color-form-existing-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.color-swatch-preview {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 1px solid rgba(0,0,0,0.15);
+    display: inline-block;
+    flex-shrink: 0;
+}

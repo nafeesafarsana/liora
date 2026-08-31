@@ -14,3 +14,5 @@ def home_view(request):
         {'name': 'Ember Satchel', 'price': '21,000', 'image': 'images/bag-4.jpg'},
     ]
     return render(request, 'home/home.html', {'featured_products': featured_products})
+def about_view(request):
+    return render(request, 'home/about.html')    

@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Order Placed! | LIORA{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/checkout.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="success-shell">
+    <div class="success-card">
+
+        <!-- Illustration -->
+        <div class="success-icon">
+            <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+                <circle cx="12" cy="12" r="10" stroke="#4C8C5A" stroke-width="1.5"></circle>
+                <polyline points="7 12 10 15 17 9" stroke="#4C8C5A" stroke-width="2"></polyline>
+            </svg>
+        </div>
+
+        <p class="success-eyebrow">Order Confirmed</p>
+        <h1 class="success-title">Thank You for Shopping with LIORA!</h1>
+        <p class="success-subtitle">
+            Your order has been placed successfully. We'll process it shortly.
+        </p>
+
+        <div class="success-order-info">
+            <div class="success-info-row">
+                <span>Order ID</span>
+                <strong>{{ order.order_id }}</strong>
+            </div>
+            <div class="success-info-row">
+                <span>Payment</span>
+                <strong>Cash on Delivery</strong>
+            </div>
+            <div class="success-info-row">
+                <span>Total</span>
+                <strong>₹{{ order.total }}</strong>
+            </div>
+            <div class="success-info-row">
+                <span>Status</span>
+                <strong style="color:#8A6A1F;">{{ order.get_status_display }}</strong>
+            </div>
+        </div>
+
+        <div class="success-actions">
+            <a href="{% url 'orders:order_detail' order.order_id %}" class="btn-primary success-btn">
+                View Order Details
+            </a>
+            <a href="{% url 'products:product_list' %}" class="btn-secondary success-btn">
+                Continue Shopping
+            </a>
+        </div>
+
+        <p class="success-note">
+            A confirmation will be available in your
+            <a href="{% url 'orders:order_list' %}">My Orders</a> page.
+        </p>
+    </div>
+</div>
+{% endblock %}

@@ -21,6 +21,14 @@
         <h1 class="panel-title">Personal Information</h1>
     </div>
 
+    <div class="profile-avatar-section">
+        {% if user.profile.profile_picture %}
+            <img src="{{ user.profile.profile_picture.url }}" alt="Profile picture" class="profile-avatar-img">
+        {% else %}
+            <div class="profile-avatar-default">{{ user.first_name|first|upper }}{{ user.last_name|first|upper }}</div>
+        {% endif %}
+    </div>
+
     <div class="info-card">
         <div class="info-row">
             <span class="info-label">First Name</span>
@@ -42,7 +50,9 @@
 
     <div class="panel-actions">
         <a href="{% url 'profile_app:edit_profile' %}" class="btn-primary panel-btn">Edit Profile</a>
-        <a href="{% url 'profile_app:change_password' %}" class="btn-secondary panel-btn">Change Password</a>
+        {% if not is_google_user %}
+<a href="{% url 'profile_app:change_password' %}" class="btn-secondary panel-btn">Change Password</a>
+{% endif %}
     </div>
 </div>
 {% endblock %}

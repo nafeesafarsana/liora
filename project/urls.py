@@ -14,6 +14,14 @@ urlpatterns = [
     path('accounts/', include('accounts.urls')),
     path('profile/', include('profile_app.urls')),
     path('admin-panel/', include('admin_panel.urls')),
+    path('products/', include('products.urls')),   # ← add this
+    path('cart/', include('cart.urls')),    
+    path('orders/', include('orders.urls')),   
+    path('payments/', include('payments.urls')),  
+    path('coupons/', include('coupons.urls')),
+    path('wallet/', include('wallet.urls')),
+    path('offers/', include('offers.urls')),
+    path('reports/', include('reports.urls')),   
     # django-allauth (Google Login)
     path('accounts/', include('allauth.urls')),
 ]

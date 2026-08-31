@@ -39,6 +39,11 @@ def signup_view(request):
     else:
         form = SignupForm()
 
+        ref = request.GET.get('ref', '').strip()
+        if ref:
+            request.session['referral_code'] = ref
+
+
     return render(request, 'accounts/signup.html', {'form': form})
 
 
@@ -69,7 +74,38 @@ def signup_otp_view(request):
                 )
                 del request.session['pending_signup']
                 login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+
+                # ---- Referral code apply ----
+                ref_code = request.session.get('referral_code', '').strip()
+                if ref_code:
+                    try:
+                        from offers.models import ReferralCode, ReferralUsage
+                        from wallet.views import get_or_create_wallet
+                        referral = ReferralCode.objects.get(code=ref_code)
+                        if referral.user != user:
+                            if not ReferralUsage.objects.filter(referred_user=user).exists():
+                                ReferralUsage.objects.create(
+                                    referral_code=referral,
+                                    referred_user=user,
+                                    reward_given=True
+                                )
+                                referral.times_used += 1
+                                referral.save(update_fields=['times_used'])
+                                get_or_create_wallet(referral.user).credit(
+                                    referral.reward_amount,
+                                    f"Referral bonus — {user.email} joined"
+                                )
+                                get_or_create_wallet(user).credit(
+                                    referral.reward_amount,
+                                    "Welcome bonus — joined via referral"
+                                )
+                        del request.session['referral_code']
+                    except Exception:
+                        pass
+                # ---- End referral ----
+
                 messages.success(request, f"Welcome to LIORA, {user.first_name}! Your account is verified.")
+                return redirect('home:home')
                 return redirect('home:home')
             elif otp_qs and otp_qs.is_expired():
                 messages.error(request, "This code has expired. Please request a new one.")

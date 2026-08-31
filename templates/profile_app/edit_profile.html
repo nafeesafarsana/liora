@@ -20,9 +20,21 @@
         <p class="panel-eyebrow">Account</p>
         <h1 class="panel-title">Edit Profile</h1>
     </div>
+<form method="post" action="{% url 'profile_app:edit_profile' %}" class="edit-form" enctype="multipart/form-data" novalidate>
+    {% csrf_token %}
 
-    <form method="post" action="{% url 'profile_app:edit_profile' %}" class="edit-form" novalidate>
-        {% csrf_token %}
+    <div class="profile-pic-section">
+        {% if user.profile.profile_picture %}
+            <img src="{{ user.profile.profile_picture.url }}" alt="Profile picture" class="current-profile-pic">
+        {% else %}
+            <div class="default-profile-pic">{{ user.first_name|first|upper }}{{ user.last_name|first|upper }}</div>
+        {% endif %}
+        <div class="profile-pic-upload">
+            <label class="form-label" for="{{ picture_form.profile_picture.id_for_label }}">Profile Picture</label>
+            {{ picture_form.profile_picture }}
+            {% if picture_form.profile_picture.errors %}<span class="form-error">{{ picture_form.profile_picture.errors.0 }}</span>{% endif %}
+        </div>
+    </div>
 
         <div class="form-row">
             <div class="form-group">
@@ -38,11 +50,20 @@
         </div>
 
         <div class="form-group">
-            <label class="form-label" for="{{ form.email.id_for_label }}">Email Address</label>
-            {{ form.email }}
-            <span class="field-hint">Changing your email will require OTP verification.</span>
-            {% if form.email.errors %}<span class="form-error">{{ form.email.errors.0 }}</span>{% endif %}
-        </div>
+    <label class="form-label">Email Address</label>
+    {% if is_google_user %}
+        <input type="text" value="{{ user.email }}" class="form-input" disabled>
+        <span class="field-hint" style="color: #C8A96B;">
+            Signed in with Google — email cannot be changed here.
+        </span>
+    {% else %}
+        {{ form.email }}
+        <span class="field-hint">Changing your email will require OTP verification.</span>
+        {% if form.email.errors %}
+            <span class="form-error">{{ form.email.errors.0 }}</span>
+        {% endif %}
+    {% endif %}
+</div>
 
         <div class="panel-actions">
             <button type="submit" class="btn-primary panel-btn">Save Changes</button>
@@ -50,4 +71,7 @@
         </div>
     </form>
 </div>
+{% endblock %}
+{% block extra_js %}
+<script src="{% static 'js/profile.js' %}"></script>
 {% endblock %}

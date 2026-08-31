@@ -1,0 +1,233 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Shop | LIORA{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/product_list.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="shop-shell">
+
+    <!-- Page Header -->
+    <div class="shop-header">
+        <div>
+            <p class="shop-eyebrow">LIORA Collection</p>
+            <h1 class="shop-title">
+                {% if selected_category %}
+                    {{ selected_category.name }}
+                {% elif query %}
+                    Search Results
+                {% else %}
+                    All Handbags
+                {% endif %}
+            </h1>
+        </div>
+        <p class="shop-count">{{ total_results }} product{{ total_results|pluralize }}</p>
+    </div>
+
+    <!-- Filter + Search Bar -->
+    <form method="get" action="{% url 'products:product_list' %}"
+          class="shop-filters-form" id="filterForm">
+
+        <!-- Search -->
+        <div class="filter-search-wrap">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input type="text" name="q" value="{{ query }}"
+                   placeholder="Search handbags, brands..."
+                   class="filter-search-input">
+            {% if query %}
+            <a href="{% url 'products:product_list' %}{% if category_id %}?category={{ category_id }}{% endif %}"
+               class="filter-clear-search" title="Clear search">&times;</a>
+            {% endif %}
+        </div>
+
+        <!-- Category dropdown -->
+        <select name="category" class="filter-select" onchange="this.form.submit()">
+            <option value="">All Categories</option>
+            {% for cat in categories %}
+            <option value="{{ cat.pk }}"
+                    {% if category_id == cat.pk|stringformat:"s" %}selected{% endif %}>
+                {{ cat.name }}
+            </option>
+            {% endfor %}
+        </select>
+
+        <!-- Sort dropdown -->
+        <select name="sort" class="filter-select" onchange="this.form.submit()">
+            <option value="newest" {% if sort == 'newest' %}selected{% endif %}>Newest First</option>
+            <option value="price_low" {% if sort == 'price_low' %}selected{% endif %}>Price: Low to High</option>
+            <option value="price_high" {% if sort == 'price_high' %}selected{% endif %}>Price: High to Low</option>
+            <option value="name_az" {% if sort == 'name_az' %}selected{% endif %}>Name: A to Z</option>
+            <option value="name_za" {% if sort == 'name_za' %}selected{% endif %}>Name: Z to A</option>
+        </select>
+
+        <!-- Price range -->
+        <div class="filter-price-wrap">
+            <input type="number" name="min_price" value="{{ min_price }}"
+                   placeholder="Min ₹" class="filter-price-input">
+            <span class="price-separator">—</span>
+            <input type="number" name="max_price" value="{{ max_price }}"
+                   placeholder="Max ₹" class="filter-price-input">
+        </div>
+
+        <!-- Search button -->
+        <button type="submit" class="btn-primary filter-search-btn">Search</button>
+
+        <!-- Clear all filters -->
+        {% if query or category_id or min_price or max_price or sort != 'newest' %}
+        <a href="{% url 'products:product_list' %}" class="filter-clear-all">Clear All</a>
+        {% endif %}
+    </form>
+
+    <!-- Active filters display -->
+    {% if query or selected_category or min_price or max_price %}
+    <div class="active-filters">
+        {% if query %}
+        <span class="active-filter-tag">Search: "{{ query }}"</span>
+        {% endif %}
+        {% if selected_category %}
+        <span class="active-filter-tag">Category: {{ selected_category.name }}</span>
+        {% endif %}
+        {% if min_price %}
+        <span class="active-filter-tag">Min: ₹{{ min_price }}</span>
+        {% endif %}
+        {% if max_price %}
+        <span class="active-filter-tag">Max: ₹{{ max_price }}</span>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- Product Grid -->
+    {% if page_obj %}
+    <div class="product-grid">
+        {% for product in page_obj %}
+
+        <!-- Product Card wrapper — position relative for wishlist btn -->
+        <div class="product-card-wrap">
+            <a href="{% url 'products:product_detail' product.pk %}" class="product-card">
+                <div class="product-card-image">
+                    {% if product.primary_image %}
+                        <img src="{{ product.primary_image.image.url }}"
+                             alt="{{ product.name }}"
+                             class="product-card-img">
+                    {% else %}
+                        <div class="product-card-placeholder">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none"
+                                 stroke="currentColor" stroke-width="1.2">
+                                <path d="M6 7h12l1 13H5L6 7z"></path>
+                                <path d="M9 7V5a3 3 0 0 1 6 0v2"></path>
+                            </svg>
+                        </div>
+                    {% endif %}
+{% if product.best_discount_pct > 0 %}
+<span class="product-discount-badge">
+    -{{ product.best_discount_pct }}% OFF
+</span>
+{% endif %}
+
+{% if not product.is_in_stock %}
+<div class="product-out-of-stock-overlay">Out of Stock</div>
+{% endif %}
+
+                    {% if not product.is_in_stock %}
+                    <div class="product-out-of-stock-overlay">Out of Stock</div>
+                    {% endif %}
+                </div>
+
+                <div class="product-card-info">
+                    <p class="product-card-category">{{ product.category.name }}</p>
+                    <h3 class="product-card-name">{{ product.name }}</h3>
+                    <div class="product-card-price">
+                        {% if product.discount_price %}
+                            <span class="price-current">₹{{ product.discount_price }}</span>
+                            <span class="price-original">₹{{ product.price }}</span>
+                        {% else %}
+                            <span class="price-current">₹{{ product.price }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </a>
+
+            <!-- Wishlist button — outside the <a> tag to avoid nested links -->
+            {% if user.is_authenticated %}
+            <form method="post"
+                  action="{% url 'cart:wishlist_toggle' product.pk %}"
+                  class="product-card-wishlist-form">
+                {% csrf_token %}
+                <button type="submit"
+                        class="product-card-wishlist-btn {% if product.pk in wishlist_product_ids %}wishlisted{% endif %}"
+                        title="{% if product.pk in wishlist_product_ids %}Remove from Wishlist{% else %}Add to Wishlist{% endif %}">
+                    <svg width="16" height="16" viewBox="0 0 24 24"
+                         fill="{% if product.pk in wishlist_product_ids %}currentColor{% else %}none{% endif %}"
+                         stroke="currentColor" stroke-width="2">
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                    </svg>
+                </button>
+            </form>
+            {% endif %}
+        </div>
+
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if page_obj.paginator.num_pages > 1 %}
+    <nav class="shop-pagination">
+        <ul class="pagination-list">
+            {% if page_obj.has_previous %}
+            <li>
+                <a href="?page={{ page_obj.previous_page_number }}&{{ query_string }}"
+                   class="page-btn">&larr; Previous</a>
+            </li>
+            {% else %}
+            <li><span class="page-btn disabled">&larr; Previous</span></li>
+            {% endif %}
+
+            {% for page_num in page_obj.paginator.page_range %}
+                {% if page_num == page_obj.number %}
+                <li><span class="page-btn active">{{ page_num }}</span></li>
+                {% elif page_num > page_obj.number|add:"-3" and page_num < page_obj.number|add:"3" %}
+                <li>
+                    <a href="?page={{ page_num }}&{{ query_string }}"
+                       class="page-btn">{{ page_num }}</a>
+                </li>
+                {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+            <li>
+                <a href="?page={{ page_obj.next_page_number }}&{{ query_string }}"
+                   class="page-btn">Next &rarr;</a>
+            </li>
+            {% else %}
+            <li><span class="page-btn disabled">Next &rarr;</span></li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+
+    {% else %}
+    <!-- Empty state -->
+    <div class="shop-empty">
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="1.2">
+            <path d="M6 7h12l1 13H5L6 7z"></path>
+            <path d="M9 7V5a3 3 0 0 1 6 0v2"></path>
+        </svg>
+        <h3>No products found</h3>
+        <p>Try adjusting your search or filters.</p>
+        <a href="{% url 'products:product_list' %}" class="btn-primary"
+           style="width:auto; padding: 13px 28px;">
+            Clear Filters
+        </a>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

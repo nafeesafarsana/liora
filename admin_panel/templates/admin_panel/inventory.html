@@ -1,0 +1,178 @@
+{% extends 'admin_panel/admin_base.html' %}
+{% load static %}
+
+{% block title %}Inventory | LIORA Admin{% endblock %}
+
+{% block content %}
+{% include 'admin_panel/includes/admin_navbar.html' %}
+
+<div class="admin-shell">
+    <div class="admin-page-header">
+        <div>
+            <p class="admin-eyebrow">Management</p>
+            <h1 class="admin-page-title">Inventory & Stock</h1>
+        </div>
+    </div>
+
+    <div class="admin-panel-card">
+
+        <!-- Search + Sort -->
+        <div class="admin-panel-card-header admin-um-header">
+            <form method="get" action="{% url 'admin_panel:inventory' %}" class="admin-search-form">
+                <div class="admin-search-input-wrap">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <input type="text" name="q" value="{{ query }}"
+                           placeholder="Search product or category..."
+                           class="admin-search-input">
+                </div>
+
+                <select name="sort" class="admin-filter-select" onchange="this.form.submit()">
+                    <option value="low_stock" {% if sort == 'low_stock' %}selected{% endif %}>
+                        Stock: Low to High
+                    </option>
+                    <option value="high_stock" {% if sort == 'high_stock' %}selected{% endif %}>
+                        Stock: High to Low
+                    </option>
+                    <option value="name_az" {% if sort == 'name_az' %}selected{% endif %}>
+                        Name: A to Z
+                    </option>
+                    <option value="newest" {% if sort == 'newest' %}selected{% endif %}>
+                        Newest First
+                    </option>
+                </select>
+
+                <button type="submit" class="admin-btn-gold admin-search-btn">Search</button>
+                {% if query %}
+                <a href="{% url 'admin_panel:inventory' %}"
+                   class="admin-btn-outline admin-clear-btn">Clear</a>
+                {% endif %}
+            </form>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table admin-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Product</th>
+                        <th>Category</th>
+                        <th>Price</th>
+                        <th>Current Stock</th>
+                        <th>Status</th>
+                        <th class="text-end">Update Stock</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for product in page_obj %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>
+                            <div style="display:flex; align-items:center; gap:10px;">
+                                {% if product.primary_image %}
+                                <img src="{{ product.primary_image.image.url }}"
+                                     style="width:40px; height:40px; object-fit:cover; border-radius:4px; border:1px solid #E8DCCB;">
+                                {% endif %}
+                                <strong>{{ product.name }}</strong>
+                            </div>
+                        </td>
+                        <td>{{ product.category.name|default:"—" }}</td>
+                        <td>₹{{ product.price }}</td>
+                        <td>
+                            {% if product.stock == 0 %}
+                            <span class="admin-badge admin-badge-blocked">Out of Stock</span>
+                            {% elif product.stock <= 5 %}
+                            <span class="admin-badge"
+                                  style="background:#FBF3E3; color:#8A6A1F;">
+                                Low ({{ product.stock }})
+                            </span>
+                            {% else %}
+                            <span class="admin-badge admin-badge-active">{{ product.stock }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if product.is_listed %}
+                            <span class="admin-badge admin-badge-active">Listed</span>
+                            {% else %}
+                            <span class="admin-badge admin-badge-blocked">Unlisted</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end">
+                            <form method="post"
+                                  action="{% url 'admin_panel:update_stock' product.pk %}"
+                                  style="display:flex; align-items:center; gap:8px; justify-content:flex-end;">
+                                {% csrf_token %}
+                                <input type="hidden" name="redirect_qs"
+                                       value="{{ request.GET.urlencode }}">
+                                <input type="number"
+                                       name="stock"
+                                       value="{{ product.stock }}"
+                                       min="0"
+                                       class="admin-stock-input">
+                                <button type="submit" class="admin-btn-gold"
+                                        style="padding:8px 16px; font-size:0.8rem;">
+                                    Update
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center admin-empty-row">
+                            No products found.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        {% if page_obj.paginator.num_pages > 1 %}
+        <nav class="admin-pagination">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link"
+                       href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query }}{% endif %}&sort={{ sort }}">
+                       Previous
+                    </a>
+                </li>
+                {% else %}
+                <li class="page-item disabled"><span class="page-link">Previous</span></li>
+                {% endif %}
+
+                {% for page_num in page_obj.paginator.page_range %}
+                    {% if page_num == page_obj.number %}
+                    <li class="page-item active">
+                        <span class="page-link">{{ page_num }}</span>
+                    </li>
+                    {% else %}
+                    <li class="page-item">
+                        <a class="page-link"
+                           href="?page={{ page_num }}{% if query %}&q={{ query }}{% endif %}&sort={{ sort }}">
+                           {{ page_num }}
+                        </a>
+                    </li>
+                    {% endif %}
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link"
+                       href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query }}{% endif %}&sort={{ sort }}">
+                       Next
+                    </a>
+                </li>
+                {% else %}
+                <li class="page-item disabled"><span class="page-link">Next</span></li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,148 @@
+{% extends 'admin_panel/admin_base.html' %}
+{% load static %}
+
+{% block title %}Products | LIORA Admin{% endblock %}
+
+{% block content %}
+{% include 'admin_panel/includes/admin_navbar.html' %}
+
+<div class="admin-shell">
+    <div class="admin-page-header">
+        <div>
+            <p class="admin-eyebrow">Products</p>
+            <h1 class="admin-page-title">Product Management</h1>
+        </div>
+        <a href="{% url 'admin_panel:product_add' %}" class="admin-btn-gold">+ Add Product</a>
+    </div>
+
+    <div class="admin-panel-card">
+        <div class="admin-panel-card-header admin-um-header">
+            <form method="get" action="{% url 'admin_panel:product_list' %}" class="admin-search-form">
+                <div class="admin-search-input-wrap">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <input type="text" name="q" value="{{ query }}" placeholder="Search products..." class="admin-search-input">
+                </div>
+                <button type="submit" class="admin-btn-gold admin-search-btn">Search</button>
+                {% if query %}
+                <a href="{% url 'admin_panel:product_list' %}" class="admin-btn-outline admin-clear-btn">Clear</a>
+                {% endif %}
+            </form>
+        </div>
+
+        {% if query %}
+        <p class="admin-search-meta">
+            Showing <strong>{{ total_results }}</strong> result{{ total_results|pluralize }} for "<strong>{{ query }}</strong>"
+        </p>
+        {% endif %}
+
+        <div class="table-responsive">
+            <table class="table admin-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Image</th>
+                        <th>Name</th>
+                        <th>Category</th>
+                        <th>Price</th>
+                        <th>Stock</th>
+                        <th>Listed</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for product in page_obj %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>
+                            {% if product.primary_image %}
+                                <img src="{{ product.primary_image.image.url }}"
+                                     alt="{{ product.name }}"
+                                     class="product-thumb">
+                            {% else %}
+                                <div class="product-thumb-placeholder">No Image</div>
+                            {% endif %}
+                        </td>
+                        <td><strong>{{ product.name }}</strong></td>
+                        <td>{{ product.category.name|default:"—" }}</td>
+                        <td>
+                            ₹{{ product.price }}
+                            {% if product.discount_price %}
+                                <br><small style="color: var(--admin-success);">₹{{ product.discount_price }}</small>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if product.is_in_stock %}
+                                <span class="admin-badge admin-badge-active">{{ product.stock }}</span>
+                            {% else %}
+                                <span class="admin-badge admin-badge-blocked">Out of Stock</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <form method="post" action="{% url 'admin_panel:product_toggle_list' product.pk %}">
+                                {% csrf_token %}
+                                <button type="submit" class="admin-badge {% if product.is_listed %}admin-badge-active{% else %}admin-badge-blocked{% endif %}">
+                                    {% if product.is_listed %}Listed{% else %}Unlisted{% endif %}
+                                </button>
+                            </form>
+                        </td>
+                        <td class="text-end">
+                            <div class="admin-action-group">
+                                <a href="{% url 'admin_panel:product_edit' product.pk %}"
+                                   class="admin-action-btn admin-action-unblock">Edit</a>
+                                <form method="post"
+                                      action="{% url 'admin_panel:product_delete' product.pk %}"
+                                      onsubmit="return confirm('Delete product \'{{ product.name }}\'?')">
+                                    {% csrf_token %}
+                                    <button type="submit" class="admin-action-btn admin-action-block">Delete</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8" class="text-center admin-empty-row">
+                            {% if query %}No products found for "{{ query }}"{% else %}No products yet. <a href="{% url 'admin_panel:product_add' %}">Add one</a>{% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% if page_obj.paginator.num_pages > 1 %}
+        <nav class="admin-pagination">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query }}{% endif %}">Previous</a>
+                </li>
+                {% else %}
+                <li class="page-item disabled"><span class="page-link">Previous</span></li>
+                {% endif %}
+
+                {% for page_num in page_obj.paginator.page_range %}
+                    {% if page_num == page_obj.number %}
+                    <li class="page-item active"><span class="page-link">{{ page_num }}</span></li>
+                    {% else %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_num }}{% if query %}&q={{ query }}{% endif %}">{{ page_num }}</a>
+                    </li>
+                    {% endif %}
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query }}{% endif %}">Next</a>
+                </li>
+                {% else %}
+                <li class="page-item disabled"><span class="page-link">Next</span></li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

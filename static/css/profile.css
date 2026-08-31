@@ -81,3 +81,33 @@
         gap: 4px;
     }
 }
+
+.profile-avatar-section {
+    text-align: center;
+    margin-bottom: var(--space-lg);
+}
+
+.profile-avatar-img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--gold);
+    margin: 0 auto;
+}
+
+.profile-avatar-default {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--burgundy) 0%, var(--burgundy-dark) 100%);
+    color: var(--cream);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin: 0 auto;
+    border: 3px solid var(--gold);
+}
