@@ -5,6 +5,54 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/home.css' %}">
+<style>
+    /* Force 4 column grid on featured products */
+    .featured-grid {
+        display: grid !important;
+        grid-template-columns: repeat(4, 1fr) !important;
+        gap: 24px !important;
+        margin-top: 32px !important;
+        text-align: left !important;
+    }
+
+    .featured-section {
+        padding: 80px 24px !important;
+        max-width: 1280px !important;
+        margin: 0 auto !important;
+    }
+
+    .featured-inner {
+        max-width: 1280px;
+        margin: 0 auto;
+        text-align: center;
+    }
+
+    .featured-card {
+        text-decoration: none;
+        color: inherit;
+        display: block;
+    }
+
+    .featured-card-image {
+        aspect-ratio: 1;
+        background-color: #faf7f2;
+        border-radius: 12px;
+        overflow: hidden;
+        margin-bottom: 12px;
+    }
+
+    .featured-card-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    @media (max-width: 900px) {
+        .featured-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+        }
+    }
+</style>
 {% endblock %}
 
 {% block content %}
@@ -26,32 +74,69 @@
     </div>
 </section>
 
-<section class="featured" id="featured">
-    <div class="section-heading">
+<!-- Featured Products Section -->
+<section class="featured-section">
+    <div class="featured-inner">
         <p class="section-eyebrow">Featured</p>
         <h2 class="section-title">This Season's Icons</h2>
-    </div>
 
-    <div class="product-grid">
-        {% for product in featured_products %}
-        <div class="product-card">
-            <div class="product-image-wrap">
-                <div class="product-image-placeholder">
-                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
-                        <path d="M6 7h12l1 13H5L6 7z"></path>
-                        <path d="M9 7V5a3 3 0 0 1 6 0v2"></path>
+        <div class="featured-grid">
+            {% for product in featured_products %}
+            <a href="{% url 'products:product_detail' product.pk %}"
+               class="featured-card">
+                <div class="featured-card-image">
+                    {% if product.primary_image %}
+                    <img src="{{ product.primary_image.image.url }}"
+                         alt="{{ product.name }}"
+                         class="featured-card-img">
+                    {% else %}
+                    <div class="featured-card-placeholder">
+                        <svg width="48" height="48" viewBox="0 0 24 24"
+                             fill="none" stroke="currentColor" stroke-width="1">
+                            <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"></path>
+                            <line x1="3" y1="6" x2="21" y2="6"></line>
+                            <path d="M16 10a4 4 0 01-8 0"></path>
+                        </svg>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="featured-card-info">
+                    <p class="featured-card-category">{{ product.category.name }}</p>
+                    <h3 class="featured-card-name">{{ product.name }}</h3>
+                    <p class="featured-card-price">
+                        {% if product.discount_price %}
+                        <span class="featured-price-current">Rs.{{ product.discount_price }}</span>
+                        <span class="featured-price-original">Rs.{{ product.price }}</span>
+                        {% else %}
+                        <span class="featured-price-current">Rs.{{ product.price }}</span>
+                        {% endif %}
+                    </p>
+                </div>
+            </a>
+            {% empty %}
+            <!-- Show placeholder if no products yet -->
+            {% for i in "1234" %}
+            <div class="featured-card">
+                <div class="featured-card-image featured-card-placeholder">
+                    <svg width="48" height="48" viewBox="0 0 24 24"
+                         fill="none" stroke="currentColor" stroke-width="1">
+                        <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"></path>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <path d="M16 10a4 4 0 01-8 0"></path>
                     </svg>
                 </div>
-                <button class="quick-wishlist" aria-label="Add to wishlist">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
-                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                    </svg>
-                </button>
             </div>
-            <h3 class="product-name">{{ product.name }}</h3>
-            <p class="product-price">&#8377; {{ product.price }}</p>
+            {% endfor %}
+            {% endfor %}
         </div>
-        {% endfor %}
+
+        <div style="text-align:center; margin-top:48px;">
+            <a href="{% url 'products:product_list' %}"
+               class="btn-secondary"
+               style="width:auto; padding:16px 40px;">
+                View All Products
+            </a>
+        </div>
     </div>
 </section>
 

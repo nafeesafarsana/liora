@@ -3,7 +3,16 @@
 <nav class="liora-navbar" id="lioraNavbar">
     <div class="navbar-inner">
 
-        <!-- LEFT: Cart, Wishlist, Avatar -->
+        <div class="navbar-links">
+            <a href="{% url 'products:product_list' %}" class="nav-link">Shop</a>
+            <a href="{% url 'home:about' %}" class="nav-link">About</a>
+        </div>
+
+        <!-- CENTER: Logo -->
+        <a href="{% url 'home:home' %}" class="navbar-logo">LIORA</a>
+
+        <!-- RIGHT: Shop, About -->
+         <!-- LEFT: Cart, Wishlist, Avatar -->
         <div class="navbar-icons">
 
             <!-- Wishlist with badge -->
@@ -96,14 +105,6 @@
         </div>
         <!-- END LEFT -->
 
-        <!-- CENTER: Logo -->
-        <a href="{% url 'home:home' %}" class="navbar-logo">LIORA</a>
-
-        <!-- RIGHT: Shop, About -->
-        <div class="navbar-links">
-            <a href="{% url 'products:product_list' %}" class="nav-link">Shop</a>
-            <a href="{% url 'home:about' %}" class="nav-link">About</a>
-        </div>
 
         <!-- Mobile toggle -->
         <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Open menu">

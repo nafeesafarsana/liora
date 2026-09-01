@@ -1,18 +1,21 @@
 from django.shortcuts import render
+from products.models import Product
 
 
 def home_view(request):
-    """
-    Renders the LIORA landing page.
-    Featured products below are placeholder/demo data — wire up to a real
-    Product model when the catalog app is built.
-    """
-    featured_products = [
-        {'name': 'Aurelia Tote', 'price': '18,500', 'image': 'images/bag-1.jpg'},
-        {'name': 'Vesper Clutch', 'price': '12,900', 'image': 'images/bag-2.jpg'},
-        {'name': 'Noir Crossbody', 'price': '15,200', 'image': 'images/bag-3.jpg'},
-        {'name': 'Ember Satchel', 'price': '21,000', 'image': 'images/bag-4.jpg'},
-    ]
-    return render(request, 'home/home.html', {'featured_products': featured_products})
+    # Get real featured products from database
+    featured_products = Product.objects.filter(
+        is_deleted=False,
+        is_listed=True,
+        category__is_deleted=False,
+        category__is_listed=True,
+    ).select_related('category').prefetch_related('images').order_by('-created_at')[:4]
+
+    context = {
+        'featured_products': featured_products,
+    }
+    return render(request, 'home/home.html', context)
+
+
 def about_view(request):
-    return render(request, 'home/about.html')    
+    return render(request, 'home/about.html')

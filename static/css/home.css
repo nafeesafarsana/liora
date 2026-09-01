@@ -159,10 +159,121 @@
 }
 
 /* ---- Featured products ---- */
-.featured {
+/* ==========================================================================
+   Featured Products Section
+   ========================================================================== */
+.featured-section {
+    padding: var(--space-xl) var(--space-md);
+    background-color: var(--white);
+}
+
+.featured-inner {
     max-width: 1280px;
     margin: 0 auto;
-    padding: var(--space-xl) var(--space-md);
+    text-align: center;
+}
+
+.featured-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-md);
+    margin-top: var(--space-lg);
+    text-align: left;
+}
+
+.featured-card {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    transition: transform 0.3s ease;
+}
+
+.featured-card:hover {
+    transform: translateY(-6px);
+}
+
+.featured-card-image {
+    position: relative;
+    aspect-ratio: 1;
+    background-color: var(--beige-soft);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    margin-bottom: var(--space-sm);
+}
+
+.featured-card-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+
+.featured-card:hover .featured-card-img {
+    transform: scale(1.05);
+}
+
+.featured-card-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--burgundy-light);
+    opacity: 0.4;
+}
+
+.featured-card-info {
+    padding: 0 4px;
+}
+
+.featured-card-category {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 4px;
+}
+
+.featured-card-name {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.featured-card-price {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+}
+
+.featured-price-current {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--burgundy);
+}
+
+.featured-price-original {
+    font-size: 0.82rem;
+    color: #9b9b9b;
+    text-decoration: line-through;
+}
+
+@media (max-width: 900px) {
+    .featured-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .featured-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--space-sm);
+    }
 }
 
 .product-grid {

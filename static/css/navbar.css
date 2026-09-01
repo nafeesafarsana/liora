@@ -15,40 +15,31 @@
     margin: 0 auto;
     padding: 0 var(--space-md, 24px);
     height: 72px;
-    display: flex;
     align-items: center;
-    justify-content: space-between;
-    /* 3 columns: icons | logo | links */
     display: grid;
     grid-template-columns: 1fr auto 1fr;
-    gap: 0;
 }
 
-/* LEFT — icons */
-.navbar-icons {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    justify-content: flex-start;
-}
-
-/* CENTER — logo */
-.navbar-logo {
-    font-family: var(--font-display, 'Playfair Display', Georgia, serif);
-    font-size: 1.6rem;
-    font-weight: 700;
-    color: var(--burgundy-dark, #3a0e2a);
-    text-decoration: none;
-    letter-spacing: 0.06em;
-    text-align: center;
-}
-
-/* RIGHT — links */
+/* LEFT — Shop, About links */
 .navbar-links {
     display: flex;
     align-items: center;
     gap: var(--space-md, 24px);
-    justify-content: flex-end;
+    justify-content: flex-start;    /* ← was flex-end */
+    order: -1;                       /* ← forces links to left */
+}
+
+/* CENTER — Logo stays center automatically */
+.navbar-logo {
+    text-align: center;
+}
+
+/* RIGHT — Icons */
+.navbar-icons {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: flex-end;      /* ← was flex-start */
 }
 
 .nav-link {

@@ -254,7 +254,10 @@
         }
 
         .about-hero-image {
-            height: 60vh;
+            position: relative;
+            overflow: hidden;
+            background-color: #1a3a2a;
+            /* background-image set inline above */
         }
 
         .about-hero-content {
@@ -299,21 +302,23 @@
     <section class="about-hero">
 
         <!-- Left: Your Photo -->
-        <div class="about-hero-image">
-            <img src="{% static 'images/founder.jpg' %}"
-                 alt="Nafeesa Farsana — Founder of LIORA"
-                 class="about-hero-img">
-
-            <!-- Founder tag overlaid on photo -->
-            <div class="about-founder-tag">
-                <p class="about-founder-tag-label">Founder &amp; Creator</p>
-                <h2 class="about-founder-tag-name">Nafeesa Farsana</h2>
-                <p class="about-founder-tag-quote">
-                    "Luxury is not a price tag —<br>
-                    it is intention made visible."
-                </p>
-            </div>
-        </div>
+<!-- NEW — CSS background is more reliable -->
+{% load static %}
+<div class="about-hero-image"
+     style="background-image: url('{% static 'images/founder.jpg' %}');
+            background-size: cover;
+            background-position: center top;
+            background-repeat: no-repeat;">
+    <!-- Founder tag overlaid on photo -->
+    <div class="about-founder-tag">
+        <p class="about-founder-tag-label">Founder &amp; Creator</p>
+        <h2 class="about-founder-tag-name">Nafeesa Farsana</h2>
+        <p class="about-founder-tag-quote">
+            "Luxury is not a price tag —<br>
+            it is intention made visible."
+        </p>
+    </div>
+</div>
 
         <!-- Right: Story -->
         <div class="about-hero-content">
