@@ -58,5 +58,29 @@
             <a href="{% url 'orders:order_list' %}">My Orders</a> page.
         </p>
     </div>
+
+
+    <!-- Refer & Earn nudge after successful order -->
+<div style="margin-top: var(--space-lg);
+            padding: var(--space-md);
+            background-color: var(--beige-soft);
+            border-radius: var(--radius-md);
+            text-align: center;
+            border: 1px solid var(--beige);">
+    <p style="font-size: 0.88rem; color: var(--text); margin-bottom: 8px;">
+        <strong>Know someone who loves luxury bags?</strong>
+    </p>
+    <p style="font-size: 0.82rem; color: #6b6b6b; margin-bottom: 12px;">
+        Share your referral code and both of you earn Rs.100 wallet credit.
+    </p>
+    <a href="{% url 'offers:my_referral' %}"
+       style="font-size: 0.85rem;
+              color: var(--burgundy);
+              font-weight: 600;
+              text-decoration: none;
+              border-bottom: 1px solid var(--burgundy);">
+        Get My Referral Code →
+    </a>
+</div>
 </div>
 {% endblock %}

@@ -25,6 +25,44 @@
             Refunds from cancelled/returned orders are credited here automatically.
         </p>
     </div>
+    <!-- Refer & Earn Banner -->
+<div style="background: linear-gradient(135deg, var(--burgundy) 0%, #8A2A4A 100%);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            margin-top: var(--space-md);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: var(--space-md);">
+    <div>
+        <p style="font-size: 0.75rem; letter-spacing: 0.14em;
+                  text-transform: uppercase; color: #C8A96B; margin-bottom: 6px;">
+            Earn Free Credits
+        </p>
+        <h3 style="font-family: var(--font-display); font-size: 1.4rem;
+                   color: white; margin-bottom: 6px;">
+            Refer Friends & Earn Rs.100
+        </h3>
+        <p style="font-size: 0.88rem; color: rgba(255,255,255,0.75); margin: 0;">
+            Share your referral code. When a friend joins,
+            both of you get Rs.100 in your wallets.
+        </p>
+    </div>
+    <a href="{% url 'offers:my_referral' %}"
+       style="background-color: #C8A96B;
+              color: #3a0e2a;
+              padding: 12px 28px;
+              border-radius: var(--radius-sm);
+              font-size: 0.88rem;
+              font-weight: 700;
+              text-decoration: none;
+              letter-spacing: 0.04em;
+              white-space: nowrap;
+              transition: opacity 0.2s ease;">
+        Get My Referral Code →
+    </a>
+</div>
 
     <!-- Transactions -->
     <div class="order-detail-card" style="margin-top:var(--space-lg);">

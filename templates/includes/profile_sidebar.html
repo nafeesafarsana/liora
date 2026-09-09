@@ -39,10 +39,17 @@
         </a>
 
         <!-- WALLET -->
-        <a href="{% url 'wallet:wallet' %}"
-           class="sidebar-link {% if request.resolver_match.url_name == 'wallet' %}active{% endif %}">
-            WALLET
-        </a>
+<a href="{% url 'wallet:wallet' %}"
+   class="sidebar-link {% if request.resolver_match.url_name == 'wallet' %}active{% endif %}">
+    WALLET
+</a>
+
+<!-- REFER & EARN — add this -->
+<a href="{% url 'offers:my_referral' %}"
+   class="sidebar-link {% if request.resolver_match.url_name == 'my_referral' %}active{% endif %}">
+    REFER & EARN
+</a>
+        
 
         <!-- SECURITY (Change Password) -->
         {% if not is_google_user %}

@@ -115,17 +115,17 @@
 
     <!-- Mobile menu -->
     <div class="mobile-menu" id="mobileMenu">
-        <a href="{% url 'products:product_list' %}" class="mobile-link">Shop</a>
-        <a href="{% url 'home:about' %}" class="mobile-link">About</a>
-        {% if user.is_authenticated %}
-        <a href="{% url 'cart:wishlist' %}" class="mobile-link">Wishlist</a>
-        <a href="{% url 'cart:cart_detail' %}" class="mobile-link">Cart</a>
-        <a href="{% url 'profile_app:profile' %}" class="mobile-link">Profile</a>
-        <a href="{% url 'accounts:logout' %}" class="mobile-link"
-           style="color:#B23A48;">Logout</a>
-        {% else %}
-        <a href="{% url 'accounts:login' %}" class="mobile-link">Login</a>
-        <a href="{% url 'accounts:signup' %}" class="mobile-link">Sign Up</a>
-        {% endif %}
-    </div>
+    <a href="{% url 'products:product_list' %}" class="mobile-link">Shop</a>
+    <a href="{% url 'home:about' %}" class="mobile-link">About</a>
+    {% if user.is_authenticated %}
+    <a href="{% url 'cart:wishlist' %}" class="mobile-link">Wishlist</a>
+    <a href="{% url 'cart:cart_detail' %}" class="mobile-link">Cart</a>
+    <a href="{% url 'profile_app:profile' %}" class="mobile-link">Profile</a>
+    <a href="{% url 'accounts:logout' %}" class="mobile-link"
+       style="color:#B23A48;">Logout</a>
+    {% else %}
+    <a href="{% url 'accounts:login' %}" class="mobile-link">Login</a>
+    <a href="{% url 'accounts:signup' %}" class="mobile-link">Sign Up</a>
+    {% endif %}
+</div>
 </nav>

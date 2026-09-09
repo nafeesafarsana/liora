@@ -1,91 +1,476 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}My Referral | LIORA{% endblock %}
+{% block title %}Refer & Earn | LIORA{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/orders.css' %}">
+<style>
+    .referral-shell {
+        max-width: 680px;
+        margin: 0 auto;
+        padding: var(--space-lg) var(--space-md) var(--space-xl);
+    }
+
+    .referral-header {
+        text-align: center;
+        margin-bottom: var(--space-xl);
+    }
+
+    .referral-eyebrow {
+        font-size: 0.78rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--gold);
+        margin-bottom: 10px;
+    }
+
+    .referral-title {
+        font-family: var(--font-display);
+        font-size: 2rem;
+        color: var(--burgundy-dark);
+        margin-bottom: 10px;
+    }
+
+    .referral-subtitle {
+        font-size: 0.92rem;
+        color: #6b6b6b;
+        line-height: 1.7;
+        max-width: 480px;
+        margin: 0 auto;
+    }
+
+    /* How it works steps */
+    .referral-steps {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--space-md);
+        margin-bottom: var(--space-lg);
+    }
+
+    .referral-step {
+        text-align: center;
+        padding: var(--space-md);
+        background-color: var(--white);
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow-soft);
+    }
+
+    .referral-step-icon {
+        font-size: 1.8rem;
+        margin-bottom: 10px;
+        display: block;
+    }
+
+    .referral-step-title {
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: var(--burgundy-dark);
+        margin-bottom: 6px;
+    }
+
+    .referral-step-text {
+        font-size: 0.8rem;
+        color: #6b6b6b;
+        line-height: 1.5;
+    }
+
+    /* Code card */
+    .referral-code-card {
+        background: linear-gradient(
+            135deg,
+            var(--burgundy) 0%,
+            #8A2A4A 100%
+        );
+        border-radius: var(--radius-lg);
+        padding: var(--space-lg);
+        text-align: center;
+        margin-bottom: var(--space-md);
+    }
+
+    .referral-code-label {
+        font-size: 0.72rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: rgba(200, 169, 107, 0.9);
+        margin-bottom: 12px;
+    }
+
+    .referral-code-value {
+        font-family: var(--font-display);
+        font-size: 2.4rem;
+        font-weight: 700;
+        color: white;
+        letter-spacing: 0.12em;
+        margin-bottom: 8px;
+    }
+
+    .referral-code-used {
+        font-size: 0.82rem;
+        color: rgba(255,255,255,0.6);
+        margin-bottom: 0;
+    }
+
+    /* Share link */
+    .referral-share-card {
+        background-color: var(--white);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-soft);
+        padding: var(--space-lg);
+        margin-bottom: var(--space-md);
+    }
+
+    .referral-share-label {
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: var(--burgundy-dark);
+        margin-bottom: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+    }
+
+    .referral-share-input-wrap {
+        display: flex;
+        gap: 10px;
+    }
+
+    .referral-share-input {
+        flex: 1;
+        padding: 12px 14px;
+        border: 1px solid var(--beige);
+        border-radius: var(--radius-sm);
+        font-size: 0.82rem;
+        font-family: var(--font-body);
+        background-color: var(--beige-soft);
+        color: #6b6b6b;
+        outline: none;
+    }
+
+    .referral-copy-btn {
+        padding: 12px 24px;
+        background-color: var(--burgundy);
+        color: var(--cream);
+        border: none;
+        border-radius: var(--radius-sm);
+        font-size: 0.85rem;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+        white-space: nowrap;
+    }
+
+    .referral-copy-btn:hover {
+        background-color: var(--burgundy-dark);
+    }
+
+    .referral-copy-btn.copied {
+        background-color: #4C8C5A;
+    }
+
+    /* Reward badge */
+    .referral-reward-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background-color: rgba(76, 140, 90, 0.1);
+        border: 1px solid rgba(76, 140, 90, 0.3);
+        border-radius: 999px;
+        padding: 6px 16px;
+        font-size: 0.82rem;
+        color: #4C8C5A;
+        font-weight: 600;
+        margin-top: 12px;
+    }
+
+    /* Friends list */
+    .referral-friends-card {
+        background-color: var(--white);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-soft);
+        padding: var(--space-lg);
+        margin-bottom: var(--space-md);
+    }
+
+    .referral-friends-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--burgundy-dark);
+        margin-bottom: var(--space-md);
+        padding-bottom: var(--space-sm);
+        border-bottom: 1px solid var(--beige-soft);
+    }
+
+    .referral-friend-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--beige-soft);
+        font-size: 0.88rem;
+    }
+
+    .referral-friend-row:last-child {
+        border-bottom: none;
+    }
+
+    .referral-friend-email {
+        color: var(--text);
+    }
+
+    .referral-friend-reward {
+        color: #4C8C5A;
+        font-weight: 600;
+        font-size: 0.82rem;
+    }
+
+    .referral-empty-friends {
+        text-align: center;
+        padding: var(--space-md);
+        color: #9b9b9b;
+        font-size: 0.88rem;
+    }
+
+    /* Apply referral code */
+    .referral-apply-card {
+        background-color: var(--white);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-soft);
+        padding: var(--space-lg);
+    }
+
+    .referral-apply-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--burgundy-dark);
+        margin-bottom: 6px;
+    }
+
+    .referral-apply-subtitle {
+        font-size: 0.85rem;
+        color: #6b6b6b;
+        margin-bottom: var(--space-md);
+    }
+
+    .referral-apply-form {
+        display: flex;
+        gap: 10px;
+    }
+
+    .referral-apply-input {
+        flex: 1;
+        padding: 12px 14px;
+        border: 1px solid var(--beige);
+        border-radius: var(--radius-sm);
+        font-family: var(--font-body);
+        font-size: 0.9rem;
+        outline: none;
+        transition: border-color 0.2s ease;
+    }
+
+    .referral-apply-input:focus {
+        border-color: var(--burgundy);
+    }
+
+    .referral-apply-btn {
+        padding: 12px 24px;
+        background-color: var(--burgundy);
+        color: var(--cream);
+        border: none;
+        border-radius: var(--radius-sm);
+        font-size: 0.88rem;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+    }
+
+    .referral-apply-btn:hover {
+        background-color: var(--burgundy-dark);
+    }
+
+    @media (max-width: 600px) {
+        .referral-steps {
+            grid-template-columns: 1fr;
+        }
+
+        .referral-share-input-wrap {
+            flex-direction: column;
+        }
+
+        .referral-apply-form {
+            flex-direction: column;
+        }
+
+        .referral-code-value {
+            font-size: 1.8rem;
+        }
+    }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="orders-shell">
-    <div class="orders-header">
-        <div>
-            <p class="shop-eyebrow">Account</p>
-            <h1 class="shop-title">My Referral Code</h1>
+<div class="referral-shell">
+
+    <!-- Header -->
+    <div class="referral-header">
+        <p class="referral-eyebrow">Earn Free Credits</p>
+        <h1 class="referral-title">Refer & Earn</h1>
+        <p class="referral-subtitle">
+            Share your referral code with friends.
+            When they join LIORA, both of you get
+            <strong>Rs.{{ referral.reward_amount }}</strong>
+            added to your wallets instantly.
+        </p>
+    </div>
+
+    <!-- How it works -->
+    <div class="referral-steps">
+        <div class="referral-step">
+            <span class="referral-step-icon">🔗</span>
+            <p class="referral-step-title">Share Your Link</p>
+            <p class="referral-step-text">
+                Copy your unique referral link and share it with friends.
+            </p>
+        </div>
+        <div class="referral-step">
+            <span class="referral-step-icon">👤</span>
+            <p class="referral-step-title">Friend Signs Up</p>
+            <p class="referral-step-text">
+                Your friend clicks the link and creates a LIORA account.
+            </p>
+        </div>
+        <div class="referral-step">
+            <span class="referral-step-icon">💰</span>
+            <p class="referral-step-title">Both Earn Rs.{{ referral.reward_amount }}</p>
+            <p class="referral-step-text">
+                You both get Rs.{{ referral.reward_amount }} wallet credit instantly.
+            </p>
         </div>
     </div>
 
-    <div class="order-detail-card" style="max-width:600px;">
-        <h2 class="order-detail-card-title">Share & Earn</h2>
-        <p style="color:#6b6b6b; font-size:0.9rem; margin-bottom:var(--space-md);">
-            Share your referral code. When a friend signs up and uses it,
-            both of you get ₹{{ referral.reward_amount }} in your wallets!
+    <!-- Your referral code -->
+    <div class="referral-code-card">
+        <p class="referral-code-label">Your Referral Code</p>
+        <p class="referral-code-value">{{ referral.code }}</p>
+        <p class="referral-code-used">
+            Used {{ referral.times_used }} time{{ referral.times_used|pluralize }}
         </p>
+    </div>
 
-        <div style="background:var(--beige-soft); padding:20px; border-radius:var(--radius-md);
-                    text-align:center; margin-bottom:var(--space-md);">
-            <p style="font-size:0.75rem; letter-spacing:0.1em; text-transform:uppercase;
-                      color:#6b6b6b; margin-bottom:8px;">Your Referral Code</p>
-            <p style="font-family:var(--font-display); font-size:2rem; color:var(--burgundy);
-                      font-weight:700; letter-spacing:0.1em;">{{ referral.code }}</p>
-            <p style="font-size:0.82rem; color:#6b6b6b; margin-top:4px;">
-                Used {{ referral.times_used }} time{{ referral.times_used|pluralize }}
-            </p>
+    <!-- Share link -->
+    <div class="referral-share-card">
+        <p class="referral-share-label">Share this link</p>
+        <div class="referral-share-input-wrap">
+            <input type="text"
+                   id="referralUrl"
+                   class="referral-share-input"
+                   value="{{ referral_url }}"
+                   readonly>
+            <button class="referral-copy-btn" id="copyBtn"
+                    onclick="copyReferralLink()">
+                Copy Link
+            </button>
         </div>
+        <div style="text-align:center; margin-top:12px;">
+            <span class="referral-reward-badge">
+                ✓ You earn Rs.{{ referral.reward_amount }} per successful referral
+            </span>
+        </div>
+    </div>
 
-        <div style="margin-bottom:var(--space-md);">
-            <p style="font-size:0.82rem; color:#6b6b6b; margin-bottom:8px;">Share this link:</p>
-            <div style="display:flex; gap:10px;">
-                <input type="text" value="{{ referral_url }}" readonly
-                       class="filter-search-input"
-                       style="flex:1; border:1px solid var(--beige); border-radius:var(--radius-sm);
-                              padding:10px 14px; font-size:0.82rem; background:var(--beige-soft);"
-                       id="referralUrl">
-                <button onclick="copyReferral()" class="btn-primary"
-                        style="width:auto; padding:10px 20px; font-size:0.85rem;">
-                    Copy
-                </button>
-            </div>
-        </div>
+    <!-- Friends who joined -->
+    <div class="referral-friends-card">
+        <h2 class="referral-friends-title">
+            Friends Who Joined
+            {% if usages %}
+            <span style="color:#9b9b9b; font-size:0.85rem; font-weight:400;">
+                ({{ usages.count }})
+            </span>
+            {% endif %}
+        </h2>
 
         {% if usages %}
-        <h3 style="font-size:1rem; margin-bottom:12px; color:var(--burgundy-dark);">
-            Friends Who Joined ({{ usages.count }})
-        </h3>
         {% for usage in usages %}
-        <div style="display:flex; align-items:center; justify-content:space-between;
-                    padding:10px 0; border-bottom:1px solid var(--beige-soft);">
-            <span style="font-size:0.88rem;">{{ usage.referred_user.email }}</span>
-            <span class="order-status-pill status-delivered" style="font-size:0.75rem;">
-                +₹{{ referral.reward_amount }} earned
+        <div class="referral-friend-row">
+            <span class="referral-friend-email">
+                {{ usage.referred_user.email }}
+            </span>
+            <span class="referral-friend-reward">
+                +Rs.{{ referral.reward_amount }} earned
             </span>
         </div>
         {% endfor %}
+        {% else %}
+        <div class="referral-empty-friends">
+            <p>No referrals yet.</p>
+            <p style="margin-top:4px;">
+                Share your link above to start earning!
+            </p>
+        </div>
         {% endif %}
     </div>
 
-    <!-- Apply referral form for new users -->
+    <!-- Apply someone else's referral code -->
     {% if not request.user.referral_usage %}
-    <div class="order-detail-card" style="max-width:600px; margin-top:var(--space-md);">
-        <h2 class="order-detail-card-title">Have a Referral Code?</h2>
-        <form method="post" action="{% url 'offers:apply_referral' %}"
-              style="display:flex; gap:10px; margin-top:var(--space-sm);">
+    <div class="referral-apply-card">
+        <h2 class="referral-apply-title">Have a Referral Code?</h2>
+        <p class="referral-apply-subtitle">
+            Enter a friend's referral code to get
+            Rs.{{ referral.reward_amount }} in your wallet.
+        </p>
+        <form method="post"
+              action="{% url 'offers:apply_referral' %}"
+              class="referral-apply-form">
             {% csrf_token %}
-            <input type="text" name="referral_code" placeholder="Enter referral code"
-                   class="filter-search-input"
-                   style="flex:1; border:1px solid var(--beige); border-radius:var(--radius-sm);
-                          padding:11px 14px; font-family:var(--font-body);">
-            <button type="submit" class="btn-primary" style="width:auto; padding:11px 22px;">
+            <input type="text"
+                   name="referral_code"
+                   placeholder="Enter referral code (e.g. LIORA1A2B)"
+                   class="referral-apply-input"
+                   autocomplete="off">
+            <button type="submit" class="referral-apply-btn">
                 Apply
             </button>
         </form>
     </div>
+    {% else %}
+    <div class="referral-apply-card" style="text-align:center;">
+        <span style="color:#4C8C5A; font-weight:600; font-size:0.9rem;">
+            ✓ You have already used a referral code
+        </span>
+    </div>
     {% endif %}
-</div>
 
+</div>
+{% endblock %}
+
+{% block extra_js %}
 <script>
-function copyReferral() {
+function copyReferralLink() {
     var input = document.getElementById('referralUrl');
-    input.select();
-    document.execCommand('copy');
-    alert('Referral link copied!');
+    var btn = document.getElementById('copyBtn');
+
+    // Copy to clipboard
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(input.value).then(function() {
+            btn.textContent = 'Copied!';
+            btn.classList.add('copied');
+            setTimeout(function() {
+                btn.textContent = 'Copy Link';
+                btn.classList.remove('copied');
+            }, 2000);
+        });
+    } else {
+        // Fallback for older browsers
+        input.select();
+        document.execCommand('copy');
+        btn.textContent = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(function() {
+            btn.textContent = 'Copy Link';
+            btn.classList.remove('copied');
+        }, 2000);
+    }
 }
 </script>
 {% endblock %}
